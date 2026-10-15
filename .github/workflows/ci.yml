@@ -8,7 +8,7 @@ on:
 
 jobs:
   verify:
-    name: Contract & Schema Verification
+    name: Contract & CLI Verification
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -19,10 +19,16 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Install dependencies
+      - name: Install package (editable)
         run: |
           python -m pip install --upgrade pip
-          pip install pydantic
+          pip install -e .
+
+      - name: Verify CLI Discovery & Tool Catalog
+        run: |
+          python -m doctools.cli list
+          python -m doctools.cli schema docx.build_document
+          python -m doctools.cli schema xlsx.mutate_block
 
       - name: Verify Pydantic Contracts
         run: |
