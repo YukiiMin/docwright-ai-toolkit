@@ -1,0 +1,65 @@
+---
+title: Spreadsheet (XLSX) Tools Reference
+description: API reference for xlsx.* tools in Docwright.
+---
+
+### 1. `xlsx.mutate_block`
+Inserts or overwrites a 2D rectangular data block into an existing worksheet with automatic AST formula shifting and DrawingML shape collision avoidance.
+
+**Parameters**:
+- `file_path` (*string*, required): Path to the target workbook.
+- `sheet_name` (*string*, required): Worksheet name.
+- `top_left` (*string*, required): Cell coordinate for insertion (e.g., `"B6"`).
+- `data` (*array of arrays*, required): 2D array of values or formulas (`[["Item", 100], ["Total", "=SUM(B6:B7)"]]`).
+- `shift_direction` (*string*, optional, default: `"down"`): `"down"`, `"right"`, or `"none"` (overwrite).
+
+---
+
+### 2. `xlsx.detect_tables`
+Detects independent table boundaries, whitespace corridors, and border matrices on a worksheet.
+
+**Parameters**:
+- `file_path` (*string*, required): Path to the workbook.
+- `sheet_name` (*string*, required): Worksheet name.
+
+**Returns**:
+List of detected table regions (`{"range": "A1:F20", "headers": ["ID", "Name", ...], "corridor_bottom": 21}`).
+
+---
+
+### 3. `xlsx.recalc`
+Recalculates formula values in the workbook and injects cached results into OpenXML `<v>` tags.
+
+**Parameters**:
+- `file_path` (*string*, required): Path to the workbook.
+- `timeout_seconds` (*integer*, optional, default: 30): Maximum execution time.
+
+---
+
+### 4. `xlsx.validate`
+Audits workbooks against **13 Universal Quality Gates (`UG-01..13`)** and returns structured diagnostic envelopes.
+
+**Parameters**:
+- `file_path` (*string*, required): Path to the target workbook.
+
+**Returns**:
+`Diagnostics` envelope containing `errors`, `warnings`, and `info` issues with exact cell locations.
+
+---
+
+### 5. `xlsx.extract`
+Lossless extraction of spreadsheet structure, styles, and formulas stored in opaque reference files to prevent LLM context window overflow.
+
+**Parameters**:
+- `file_path` (*string*, required): Path to workbook.
+- `sheets` (*array of strings*, optional): Specific sheet names to extract.
+
+---
+
+### 6. `xlsx.query`
+Executes targeted, paginated cell slice queries on an extracted spreadsheet model.
+
+**Parameters**:
+- `extract_ref` (*string*, required): Opaque extraction ID returned from `xlsx.extract`.
+- `sheet_name` (*string*, required): Sheet to query.
+- `cell_range` (*string*, optional): Bounding box slice (e.g., `"A1:E50"`).

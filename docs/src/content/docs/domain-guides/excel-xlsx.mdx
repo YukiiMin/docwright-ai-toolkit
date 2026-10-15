@@ -1,0 +1,34 @@
+---
+title: Spreadsheets (XLSX) Engine
+description: 2D Block Mutator, AST formula shifting, and DrawingML preservation.
+---
+
+The Docwright Spreadsheet (XLSX) Engine manages Excel workbooks without destroying calculation formulas, DrawingML logos, or table island layouts.
+
+---
+
+## Key Capabilities
+
+### 1. 2D Block Mutator with AST Formula Shifting
+When an AI agent inserts a 2D block of rows into an existing sheet:
+- Traditional scripts break formulas like `=SUM(C10:C25)`.
+- Docwright tokenizes all formulas into an **Abstract Syntax Tree (AST)** and shifts row references automatically based on insertion coordinates.
+
+### 2. Table Island Detection (`xlsx.detect_tables`)
+Sheets often contain multiple independent tables separated by whitespace corridors. Docwright detects table island boundaries and calculates available clearance corridors before inserting rows.
+
+### 3. DrawingML Anchor & Collision Shield
+Corporate logos and chart shapes use DrawingML anchor coordinates (`<xdr:twoCellAnchor>`). Docwright locks anchor coordinates and prevents row expansions from distorting logos or overlapping charts.
+
+### 4. Recalc Cache Injector (`xlsx.recalc`)
+Excel relies on cached formula calculation values stored in cell `<v>` tags. When formulas are updated programmatically, Docwright calculates formula results and updates `<v>` tags so formulas display correctly in third-party viewers.
+
+---
+
+## 14 Invariants (E1–E14)
+
+Docwright validates workbooks against 14 spreadsheet invariants:
+- **E1 (Template-Driven Tokens)**: 100% of formatting tokens are extracted from reference sheets.
+- **E3 (Dynamic KPI Formulas)**: Summary cells must use dynamic formulas (`=SUM`, `=COUNTIF`), never static hardcoded numbers.
+- **ERR_XLSX_004 (Merged Cell Safety)**: Values are assigned strictly to the top-left cell of a merge, and borders are synchronized across the entire merged range.
+- **ERR_XLSX_006 (DrawingML Preservation)**: Always preserve existing drawing parts when mutating workbook sheets.

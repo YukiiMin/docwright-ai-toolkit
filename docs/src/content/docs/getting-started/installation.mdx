@@ -1,0 +1,79 @@
+---
+title: Installation
+description: How to install Docwright AI Toolkits via pip, uv, and standalone binaries.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+Docwright AI Toolkits can be installed via standard Python package managers or used as a standalone binary executable.
+
+---
+
+## 1. Package Installation (Recommended)
+
+Docwright requires **Python >= 3.10**.
+
+<Tabs>
+  <TabItem label="pip">
+    ```bash
+    pip install docwright-ai-toolkit
+    ```
+  </TabItem>
+  <TabItem label="uv">
+    ```bash
+    uv pip install docwright-ai-toolkit
+    ```
+  </TabItem>
+  <TabItem label="poetry">
+    ```bash
+    poetry add docwright-ai-toolkit
+    ```
+  </TabItem>
+</Tabs>
+
+### Verify Installation
+
+Verify the CLI and MCP server are registered on your system:
+
+```bash
+# Verify CLI dispatcher
+docwright --version
+
+# List all 51 available tools
+docwright list
+
+# Test MCP STDIO server initialization
+docwright-mcp --help
+```
+
+---
+
+## 2. Standalone Binary Executable
+
+For environments without a local Python runtime (such as locked-down enterprise machines, CI/CD runners, or containerized agents), standalone binary executables are available on [GitHub Releases](https://github.com/YukiiMin/docwright-ai-toolkit/releases):
+
+| OS / Architecture | Binary Package | Size |
+|---|---|---|
+| **Windows x64** | `docwright-windows-amd64.exe` | ~25 MB |
+| **Linux x64** | `docwright-linux-amd64` | ~24 MB |
+| **macOS Apple Silicon** | `docwright-darwin-arm64` | ~23 MB |
+
+Configure your MCP client to launch the executable directly:
+
+```json
+{
+  "mcpServers": {
+    "docwright": {
+      "command": "C:\\Tools\\docwright.exe",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+---
+
+## Next Steps
+
+Connect Docwright to your favorite AI IDE:
+- [1-Click AI IDE Setup (Cursor, Claude, Antigravity)](/getting-started/ai-ide-setup/)

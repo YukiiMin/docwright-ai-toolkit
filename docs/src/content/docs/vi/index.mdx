@@ -1,0 +1,40 @@
+---
+title: Docwright AI Toolkits
+description: Bộ công cụ AI-Native xử lý văn phòng và sơ đồ dành riêng cho AI Agents.
+template: splash
+hero:
+  tagline: Đảm bảo toàn vẹn cấu trúc, bảo toàn định dạng và chống hỏng tệp 100% cho Word, Excel và Sơ đồ kỹ thuật.
+  image:
+    file: ../../../assets/architecture-5-layer.svg
+  actions:
+    - text: Bắt đầu ngay
+      link: /vi/getting-started/
+      icon: right-arrow
+      variant: primary
+    - text: Cấu hình AI IDE 1-Click
+      link: /vi/getting-started/ai-ide-setup/
+      icon: external
+      variant: secondary
+    - text: Xem trên GitHub
+      link: https://github.com/YukiiMin/docwright-ai-toolkit
+      icon: github
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Khả năng cốt lõi
+
+<CardGrid stagger>
+  <Card title="Động cơ Word (DOCX)" icon="document">
+    **Chuẩn hóa OpenXML ECMA-376**, khóa `<w:cantSplit/>` chống rách hàng qua trang, tự động lặp tiêu đề `<w:tblHeader/>`, và bộ ghép run phẫu thuật chống mất style.
+  </Card>
+  <Card title="Động cơ Bảng tính (XLSX)" icon="pencil">
+    **Đột biến khối 2D với dịch chuyển công thức AST**, nhận diện ốc đảo bảng (Table Islands), bảo vệ logo DrawingML, và kiểm định qua **13 Cổng phổ quát (`UG-01..13`)**.
+  </Card>
+  <Card title="Sơ đồ kỹ thuật (Draw.io)" icon="seti:graphql">
+    Sinh XML thuần `mxGraphModel` với định tuyến trực giao (Orthogonal routing), tự động co giãn kích thước theo trường, và render PNG/SVG siêu nét.
+  </Card>
+  <Card title="Tích hợp toàn diện mọi AI Agent" icon="laptop">
+    Máy chủ STDIO chuẩn **Model Context Protocol (MCP)** + Điều phối CLI. Cấu hình 1-Click cho Cursor, Claude Code, Google Antigravity, Windsurf, Codex CLI.
+  </Card>
+</CardGrid>

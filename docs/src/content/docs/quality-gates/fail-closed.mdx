@@ -1,0 +1,43 @@
+---
+title: Fail-Closed Diagnostic Envelopes
+description: Error handling philosophy and deterministic envelope schema.
+---
+
+Docwright strictly adheres to the **Fail-Closed Principle**:
+> If an unhandled exception or critical gate error occurs, execution halts immediately and reports a comprehensive diagnostic trace. The system NEVER silently swallows errors or fabricates successful completion.
+
+---
+
+## Exit Code Contract (CLI)
+
+The `docwright` CLI returns standard POSIX exit codes:
+
+| Exit Code | Meaning | Action Expected from Agent / CI |
+|---|---|---|
+| `0` | **CLEAN SUCCESS** | Operation completed with zero errors or warnings. |
+| `1` | **WARNINGS PRESENT** | Operation succeeded, but non-critical warnings occurred (e.g. style approximation). |
+| `2` | **GATE FAILURE** | One or more critical Universal Quality Gates failed. File was NOT overwritten. |
+| `64` | **USAGE / SCHEMA ERROR** | Bad arguments, missing spec file, or invalid JSON payload. |
+
+---
+
+## ResultEnvelope JSON Schema
+
+```json
+{
+  "success": false,
+  "data": null,
+  "diagnostics": {
+    "errors": [
+      {
+        "code": "UG-01",
+        "message": "Formula in cell E15 references deleted cell #REF!",
+        "location": "Operating_Expenses!E15"
+      }
+    ],
+    "warnings": [],
+    "info": []
+  },
+  "duration_ms": 48
+}
+```

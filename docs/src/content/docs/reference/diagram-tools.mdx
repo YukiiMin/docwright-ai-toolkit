@@ -1,0 +1,80 @@
+---
+title: Technical Diagrams Tools Reference
+description: API reference for diagram.* tools in Docwright.
+---
+
+### 1. `diagram.build`
+Constructs pure native Draw.io `mxGraphModel` XML structures from declarative topological specifications.
+
+**Parameters**:
+- `spec` (*object*, required): Declarative diagram specification containing `nodes`, `edges`, and `layout`.
+- `output_path` (*string*, optional): Destination path for the `.drawio` file.
+
+**Example Request**:
+```json
+{
+  "spec": {
+    "title": "Authentication Microservice",
+    "theme": "academic_line_art",
+    "nodes": [
+      {
+        "id": "api_gateway",
+        "label": "API Gateway\n(Kong / Envoy)",
+        "x": 100,
+        "y": 150,
+        "width": 140,
+        "height": 70
+      },
+      {
+        "id": "auth_svc",
+        "label": "Auth Service\n(Go / OAuth2)",
+        "x": 340,
+        "y": 150,
+        "width": 140,
+        "height": 70
+      },
+      {
+        "id": "redis_cache",
+        "label": "Token Cache\n(Redis v7)",
+        "x": 340,
+        "y": 280,
+        "width": 140,
+        "height": 70
+      }
+    ],
+    "edges": [
+      {
+        "source": "api_gateway",
+        "target": "auth_svc",
+        "label": "JWT Verify",
+        "style": "orthogonal"
+      },
+      {
+        "source": "auth_svc",
+        "target": "redis_cache",
+        "label": "Lookup Session",
+        "style": "orthogonal"
+      }
+    ]
+  },
+  "output_path": "output/auth_architecture.drawio"
+}
+```
+
+---
+
+### 2. `diagram.render_raster`
+Headless, high-DPI rendering of technical diagrams into crisp raster PNG format.
+
+**Parameters**:
+- `file_path` (*string*, required): Path to `.drawio` file.
+- `scale` (*number*, optional, default: 2.0): High-DPI scaling multiplier (2.0 = 2x Retina).
+- `border` (*integer*, optional, default: 20): Uniform padding border in pixels.
+
+---
+
+### 3. `diagram.render_svg`
+Headless vector export of diagrams into scalable, infinite-resolution SVG format.
+
+**Parameters**:
+- `file_path` (*string*, required): Path to `.drawio` file.

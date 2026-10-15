@@ -11,7 +11,7 @@ on:
         default: false
 
 permissions:
-  contents: write
+  contents: read
   id-token: write
 
 jobs:
@@ -31,25 +31,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install build twine
-
-      - name: Download release assets if available
-        if: github.event_name == 'release'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          mkdir -p dist
-          gh release download ${{ github.event.release.tag_name }} --dir dist --pattern "*.whl" || true
-          gh release download ${{ github.event.release.tag_name }} --dir dist --pattern "*.tar.gz" || true
-
-      - name: Build source distribution if dist is empty
-        run: |
-          mkdir -p dist
-          if [ -z "$(ls -A dist 2>/dev/null)" ]; then
-            echo "[*] No pre-built assets found in dist/, building sdist..."
-            python -m build --sdist --outdir dist
-          fi
-          echo "[*] Distribution packages ready for PyPI:"
-          ls -la dist/
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1

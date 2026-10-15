@@ -1,0 +1,41 @@
+---
+title: "Cookbook: 1:1 Scanned PDF Reconstruction"
+description: Reconstructing a multi-column scanned questionnaire form into Microsoft Word.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+This recipe walks through the exact 4-stage pipeline used to reconstruct complex multi-column government and enterprise paper forms into clean, editable Word documents.
+
+---
+
+## The 4-Stage Pipeline
+
+```mermaid
+flowchart TD
+    A["Scanned PDF Document"] -->|Stage 1: Layout Measurement| B["docx.measure_pdf_layout"]
+    B -->|Geometry Mesh (LayoutSpec)| C["docx.populate_layout_text"]
+    C -->|Transcribed Text Mapped| D["docx.compile_layout_spec"]
+    D -->|Compiled DocSpec| E["docx.build_document"]
+    E --> F["Pixel-Accurate Word .docx Document"]
+```
+
+<Steps>
+1. **Measure Physical Table Geometry**:
+   Call `docx.measure_pdf_layout` on the target scanned PDF. The morphological vision kernel detects physical row boundaries, column ratios, and skew angle $\theta$:
+   ```bash
+   docwright docx.measure_pdf_layout --spec '{"file_path": "scan.pdf", "page_index": 0}'
+   ```
+
+2. **Populate Transcribed Text**:
+   Call `docx.populate_layout_text` with the cell dictionary. This maps text into the exact physical cells without manual coordinate calculations.
+
+3. **Compile to DocSpec**:
+   Invoke `docx.compile_layout_spec` with `merge_continued_tables: true` to unify multi-page questionnaires into a continuous table structure.
+
+4. **Build the Final Document**:
+   Compile via `docx.build_document`. The output preserves 1:1 visual fidelity with the original paper document.
+</Steps>
+
+![Side-by-side Scanned vs Reconstructed Comparison](/images/placeholders/scanned-pdf.jpg)
+*Figure 1: Reconstructed 10-page Word document matching original scanned questionnaire layout.*

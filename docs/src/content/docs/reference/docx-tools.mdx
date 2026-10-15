@@ -1,0 +1,95 @@
+---
+title: Word (DOCX) Tools Reference
+description: API reference for docx.* tools in Docwright.
+---
+
+### 1. `docx.build_document`
+Deterministically compiles a typed `DocSpec` JSON structure into an ECMA-376 compliant Word document.
+
+**Parameters**:
+- `spec` (*object*, required): The complete `DocSpec` specification containing `page_setup`, `default_font`, `sections`, and `blocks` (paragraphs, headings, tables).
+- `output_path` (*string*, optional): Destination path for the `.docx` file.
+
+**Example Request**:
+```json
+{
+  "spec": {
+    "title": "Quarterly Financial Performance",
+    "page_setup": {
+      "orientation": "portrait",
+      "margin_top_cm": 2.0,
+      "margin_bottom_cm": 2.0,
+      "margin_left_cm": 2.5,
+      "margin_right_cm": 2.5
+    },
+    "default_font": {
+      "name": "Times New Roman",
+      "size_pt": 11.0
+    },
+    "blocks": [
+      {
+        "type": "heading",
+        "level": 1,
+        "text": "1. Executive Summary"
+      },
+      {
+        "type": "paragraph",
+        "runs": [
+          { "text": "Net revenue increased by " },
+          { "text": "14.2% YoY", "bold": true },
+          { "text": " across all enterprise divisions." }
+        ]
+      }
+    ]
+  },
+  "output_path": "output/quarterly_report.docx"
+}
+```
+
+---
+
+### 2. `docx.measure_pdf_layout`
+Analyzes scanned PDF pages using Hough line transforms and OpenCV morphological kernels to extract table grid topology without coordinate hallucinations.
+
+**Parameters**:
+- `file_path` (*string*, required): Path to the scanned PDF document.
+- `page_index` (*integer*, optional, default: 0): Page index to measure (0-indexed).
+- `dpi` (*integer*, optional, default: 300): Rasterization resolution.
+
+**Returns**:
+`LayoutSpec` containing detected rotation angle ($\theta$), column ratios (`[0.25, 0.45, 0.30]`), horizontal line positions, and detected cell IDs (`c0_0`, `c0_1`).
+
+---
+
+### 3. `docx.populate_layout_text`
+Maps textual content into measured layout cells without manual coordinate math.
+
+**Parameters**:
+- `layout_spec` (*object*, required): Geometric `LayoutSpec` returned from `docx.measure_pdf_layout`.
+- `cell_data` (*object*, required): Dictionary mapping cell IDs to text or run specs (`{"c0_0": "Item", "c0_1": "Description"}`).
+
+---
+
+### 4. `docx.compile_layout_spec`
+Compiles physical geometric measurements into clean, normalized `DocSpec` representations ready for building.
+
+**Parameters**:
+- `layout_spec` (*object*, required): The populated `LayoutSpec`.
+- `merge_continued_tables` (*boolean*, optional, default: true): Whether to merge continued tables across page splits.
+
+---
+
+### 5. `docx.patch`
+Executes surgical, format-preserving text replacements without destroying surrounding run styles.
+
+**Parameters**:
+- `file_path` (*string*, required): Path to the target `.docx` file.
+- `replacements` (*array of objects*, required): List of `{ "target": "old text", "replacement": "new text" }`.
+
+---
+
+### 6. `docx.validate`
+Audits document health against OpenXML structural invariants and returns diagnostic issues.
+
+**Parameters**:
+- `file_path` (*string*, required): Path to `.docx` file to validate.

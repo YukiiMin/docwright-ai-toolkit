@@ -1,0 +1,49 @@
+---
+title: "Cookbook: Cloud Architecture Diagram"
+description: Generating editable Draw.io architecture diagrams with orthogonal routing.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+This cookbook demonstrates how to generate a cloud microservice topology in pure native Draw.io XML format and render it headlessly to high-DPI PNG.
+
+---
+
+## Workflow Steps
+
+<Steps>
+1. **Define Topological Nodes & Connectors**:
+   Provide declarative JSON defining service components (API Gateway, Microservices, Databases) and connections.
+
+2. **Build Native mxGraphModel**:
+   Invoke `diagram.build`. The engine generates native `<mxCell>` XML elements with orthogonal routing styles (`edgeStyle=orthogonalEdgeStyle;`).
+
+3. **Render High-DPI Output**:
+   Call `diagram.render_raster` with `scale: 2.0` to produce high-DPI Retina raster graphics for documentation.
+</Steps>
+
+### Sample Topology Payload
+
+```json
+{
+  "spec": {
+    "title": "Payment Processing Architecture",
+    "theme": "academic_line_art",
+    "nodes": [
+      { "id": "client", "label": "Client Mobile App", "x": 80, "y": 140, "width": 140, "height": 60 },
+      { "id": "edge", "label": "Cloudflare CDN / WAF", "x": 280, "y": 140, "width": 150, "height": 60 },
+      { "id": "payment_api", "label": "Payment Service\n(Go / gRPC)", "x": 500, "y": 140, "width": 160, "height": 60 },
+      { "id": "db", "label": "Ledger Database\n(PostgreSQL Aurora)", "x": 500, "y": 270, "width": 160, "height": 60 }
+    ],
+    "edges": [
+      { "source": "client", "target": "edge", "label": "HTTPS POST" },
+      { "source": "edge", "target": "payment_api", "label": "mTLS Proxy" },
+      { "source": "payment_api", "target": "db", "label": "Write Transaction" }
+    ]
+  },
+  "output_path": "output/payment_architecture.drawio"
+}
+```
+
+![Generated Architecture Diagram](/images/placeholders/drawio-diagram.jpg)
+*Figure 1: Generated native Draw.io diagram opened in editor with orthogonal connectors.*

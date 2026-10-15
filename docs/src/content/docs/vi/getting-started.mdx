@@ -1,0 +1,22 @@
+---
+title: Giới thiệu tổng quan
+description: Tổng quan về Docwright AI Toolkits và sứ mệnh AI-Native.
+---
+
+**Docwright AI Toolkits** (`docwright-ai-toolkit`) là bộ công cụ AI-Native xử lý văn phòng và sơ đồ được thiết kế chuyên biệt cho các mô hình AI lập trình (AI Agents) và kỹ sư phần mềm.
+
+Bộ công cụ giải quyết triệt để vấn đề xung đột định dạng giữa Large Language Models (LLM) và các tệp văn phòng nhị phân:
+- **Microsoft Word (`.docx`)**
+- **Microsoft Excel (`.xlsx`, `.xls`)**
+- **Sơ đồ kỹ thuật Draw.io (`.drawio`, `mxGraphModel`)**
+
+---
+
+## Vì sao AI thông thường hay làm hỏng tệp văn phòng?
+
+Khi các AI Agent (Claude, GPT, Gemini) tự động viết các đoạn mã ngắn bằng `python-docx` hoặc `openpyxl`:
+1. **Vi phạm chuẩn OpenXML ECMA-376**: Bỏ quên đoạn văn `<w:p>` trong ô trống, khiến Microsoft Word hiện thông báo lỗi: *"Word found unreadable content"*.
+2. **Xé rách hàng bảng qua trang**: Bảng không có `<w:cantSplit/>` khiến văn bản bị chẻ đôi giữa 2 trang; thiếu `<w:tblHeader/>` khiến trang sau không có tiêu đề cột.
+3. **Làm hỏng công thức Excel**: Chèn thêm hàng nhưng không dịch chuyển công thức phụ thuộc (`=SUM()`), làm mất logo thương hiệu DrawingML.
+
+Docwright cung cấp một **tầng biên dịch tất định** bảo vệ 100% tệp gốc trước khi lưu.

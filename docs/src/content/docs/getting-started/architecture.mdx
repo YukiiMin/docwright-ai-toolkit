@@ -1,0 +1,34 @@
+---
+title: 5-Layer Deterministic Architecture
+description: Understanding Docwright's Open Interface, Protected Engine architecture.
+---
+
+Docwright AI Toolkits enforces a strict **5-layer separation of concerns** between AI agents and binary enterprise file formats:
+
+![5-Layer Deterministic Architecture](/images/diagrams/architecture-5-layer.svg)
+
+---
+
+## The 5 Layers Explained
+
+### Layer 5: Interfaces (CLI & Native MCP Server)
+- Provides standard JSON-RPC 2.0 communication over standard input/output (`stdio`).
+- Provides unified CLI dispatcher `docwright <tool_name> --spec <file.json>`.
+- Returns standard POSIX exit codes: `0` (clean), `1` (warnings), `2` (gate failures), `64` (usage error).
+
+### Layer 4: Operations & Central Tool Registry
+- Central dispatcher managing 51 registered tools across DOCX, XLSX, and Diagram domains.
+- **Smart Parameter Adapter**: Automatically bridges parameter discrepancies (`file_ref` vs `file_path`) and prunes unexpected kwargs passed by LLMs.
+- Wraps all execution outputs in standardized diagnostic envelopes.
+
+### Layer 3: Open Pydantic Data Contracts
+- 100% open, typed Pydantic models (`DocSpec`, `LayoutSpec`, `XlsxSpec`, `ResultEnvelope`).
+- Exposes complete JSON Schemas with field-level descriptions for LLMs to generate valid structured payloads.
+
+### Layer 2: Universal Quality Gates
+- **13 Universal Gates (`UG-01..13`)**: Validates formula integrity, merged cell borders, number formatting tokens, and DrawingML collision safety before any file is saved.
+- **8 DOCX Gates (`DG-01..08`)**: Enforces paragraph termination, table row splitting prevention, and image bounds.
+
+### Layer 1: Core Compilation Engines (C-Extensions)
+- High-performance, protected binary modules compiled with Cython GCC.
+- Enforces ECMA-376 OpenXML canonical tag order registry, 2D block formula AST shifting, and OpenCV layout measurement.

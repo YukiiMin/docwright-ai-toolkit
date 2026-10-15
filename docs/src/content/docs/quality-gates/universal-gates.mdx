@@ -1,0 +1,30 @@
+---
+title: 13 Universal Quality Gates (UG-01..13)
+description: Exhaustive specification of the 13 Universal Gates protecting spreadsheet integrity.
+---
+
+Before any spreadsheet file is finalized, Docwright evaluates it against **13 Universal Quality Gates**:
+
+| Gate Code | Name | Invariant Checked | Severity |
+|---|---|---|---|
+| `UG-01` | **Formula Dependency Check** | Detects broken formula references (`#REF!`, circular dependencies). | ERROR |
+| `UG-02` | **Merged Cell Safety** | Values must be assigned strictly to Top-Left cells; checks for clipped text. | ERROR |
+| `UG-03` | **Dynamic KPI Formulas** | Summary rows must compute values via dynamic formulas (`=SUM`), not static text. | WARNING |
+| `UG-04` | **Number Formatting Consistency** | Number formatting tokens must match template column conventions. | WARNING |
+| `UG-05` | **DrawingML Anchor Collision** | Mutated blocks must not intersect with logos, charts, or drawing shapes. | ERROR |
+| `UG-06` | **Border Synchronization** | Merged cell ranges must have synchronized perimeter border styles. | WARNING |
+| `UG-07` | **Table Island Separation** | Enforces minimum whitespace corridor (at least 1 row) between distinct tables. | WARNING |
+| `UG-08` | **Empty Sheet Prevention** | Workbooks must not contain empty or uninitialized worksheets. | ERROR |
+| `UG-09` | **Recalc Cache Staleness** | Verifies formula calculation caches in `<v>` tags are updated. | WARNING |
+| `UG-10` | **Date & Time Token Compliance** | ISO-8601 formatting tokens strictly validated. | WARNING |
+| `UG-11` | **Hidden Worksheet Audit** | Audits workbook for unexpectedly hidden sensitive worksheets. | INFO |
+| `UG-12` | **Print Area & Page Setup** | Enforces printable grid margins and landscape/portrait constraints. | INFO |
+| `UG-13` | **Strict Workbook Close Safety** | Guarantees all zip file streams are cleanly flushed and closed. | ERROR |
+
+---
+
+## Running Gate Validation via CLI
+
+```bash
+docwright xlsx.validate --spec '{"file_path": "finance/quarterly_budget.xlsx"}'
+```

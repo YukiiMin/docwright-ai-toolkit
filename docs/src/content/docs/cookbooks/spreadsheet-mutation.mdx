@@ -1,0 +1,45 @@
+---
+title: "Cookbook: Safe Spreadsheet 2D Mutation"
+description: Inserting rows into existing financial workbooks without formula corruption.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+Spreadsheet mutations frequently corrupt financial models because inserting rows shifts cell references in downstream formulas like `=SUM(E5:E20)` or overwrites merged cell headers.
+
+---
+
+## Workflow: 2D Block Mutation with AST Formula Shifting
+
+<Steps>
+1. **Preflight Inspection**:
+   Run `xlsx.inspect` to identify existing table boundaries, merged ranges, and live calculation formulas.
+
+2. **Detect Table Islands**:
+   Run `xlsx.detect_tables` to determine safe whitespace clearance corridors.
+
+3. **Execute Block Mutation**:
+   Invoke `xlsx.mutate_block` specifying `top_left: "C12"` and `shift_direction: "down"`.
+   The AST formula shifter automatically updates all formula references below row 12.
+
+4. **Recalculate & Validate**:
+   Run `xlsx.recalc` to update formula calculation cache, followed by `xlsx.validate` to verify all 13 Universal Quality Gates.
+</Steps>
+
+### Sample Mutation Payload
+
+```json
+{
+  "file_path": "finance/quarterly_budget.xlsx",
+  "sheet_name": "Operating_Expenses",
+  "top_left": "B14",
+  "shift_direction": "down",
+  "data": [
+    ["Cloud Compute Infrastructure", 145000, "=C14*1.15"],
+    ["GPU Training Cluster", 320000, "=C15*1.20"]
+  ]
+}
+```
+
+![Spreadsheet Mutation with DrawingML Logo Intact](/images/placeholders/excel-sheet.jpg)
+*Figure 1: Financial sheet mutated safely with corporate logo and dependent formulas preserved.*

@@ -1,0 +1,126 @@
+---
+title: 1-Click AI IDE & Agent Setup
+description: Connect Docwright AI Toolkits to Cursor, Claude Code, Antigravity, Windsurf, and Codex CLI.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+Docwright connects to modern AI agents via the **Model Context Protocol (MCP)** using standard I/O (`stdio`).
+
+Select your AI client below for instant 1-click configuration:
+
+---
+
+<Tabs>
+  <TabItem label="Claude Code CLI">
+    Run this single terminal command to register Docwright with Claude Code:
+
+    ```bash
+    claude mcp add docwright -- docwright-mcp
+    ```
+
+    Or manually add to your `.claude.json`:
+    ```json
+    {
+      "mcpServers": {
+        "docwright": {
+          "command": "docwright-mcp"
+        }
+      }
+    }
+    ```
+  </TabItem>
+
+  <TabItem label="Cursor IDE">
+    Add the configuration to `.cursor/mcp.json` in your workspace root:
+
+    ```json
+    {
+      "mcpServers": {
+        "docwright": {
+          "command": "docwright-mcp"
+        }
+      }
+    }
+    ```
+
+    ![Cursor IDE MCP Connected](/images/placeholders/cursor-mcp.jpg)
+    *Figure 1: Cursor MCP settings showing green active connection pill.*
+  </TabItem>
+
+  <TabItem label="Google Antigravity">
+    Add to `.agents/mcp_config.json`:
+
+    ```json
+    {
+      "mcpServers": {
+        "docwright": {
+          "command": "docwright-mcp"
+        }
+      }
+    }
+    ```
+  </TabItem>
+
+  <TabItem label="Claude Desktop">
+    Edit `%APPDATA%\Claude\claude_desktop_config.json` (Windows) or `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS):
+
+    ```json
+    {
+      "mcpServers": {
+        "docwright": {
+          "command": "docwright-mcp"
+        }
+      }
+    }
+    ```
+
+    ![Claude Desktop Tool Invocations](/images/placeholders/claude-desktop.jpg)
+    *Figure 2: Claude Desktop invoking Docwright tools via MCP.*
+  </TabItem>
+
+  <TabItem label="Windsurf">
+    Add to `~/.codeium/windsurf/mcp_config.json`:
+
+    ```json
+    {
+      "mcpServers": {
+        "docwright": {
+          "command": "docwright-mcp"
+        }
+      }
+    }
+    ```
+  </TabItem>
+
+  <TabItem label="OpenAI Codex CLI & Terminal">
+    For terminal-first agents and CI/CD scripts without MCP support, invoke tools directly via the unified CLI dispatcher:
+
+    ```bash
+    # Enumerate all 51 tools
+    docwright list
+
+    # Inspect exact argument schema
+    docwright schema docx.build_document
+
+    # Execute deterministic payload
+    docwright docx.build_document --spec payload.json
+    ```
+  </TabItem>
+
+  <TabItem label="Universal MCP (Cline, Roo, Zed)">
+    Any client supporting MCP can connect using `docwright-mcp`:
+    - **Continue.dev**: Use `configs/continue_mcp.json`
+    - **Zed Editor**: Use `configs/zed_settings.json`
+    - **Cline / Roo Code**: Use `configs/universal_mcp.json`
+  </TabItem>
+</Tabs>
+
+---
+
+## Verifying the Connection
+
+Ask your AI agent in chat:
+> *"List available document tools from Docwright and inspect the schema for docx.build_document."*
+
+The AI should respond with tool descriptions and call `docwright-mcp` automatically.

@@ -1,0 +1,53 @@
+---
+title: Docwright AI Toolkits
+description: The AI-Native Office & Diagram Toolkit Plugin for AI Agents.
+template: splash
+hero:
+  tagline: Schema-guaranteed, format-preserving, and zero-corruption execution for Word, Excel, and Technical Diagrams.
+  image:
+    file: ../../assets/architecture-5-layer.svg
+  actions:
+    - text: Get Started
+      link: /getting-started/
+      icon: right-arrow
+      variant: primary
+    - text: AI IDE Setup (1-Click)
+      link: /getting-started/ai-ide-setup/
+      icon: external
+      variant: secondary
+    - text: View on GitHub
+      link: https://github.com/YukiiMin/docwright-ai-toolkit
+      icon: github
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Core Capabilities
+
+<CardGrid stagger>
+  <Card title="Word / DOCX Engine" icon="document">
+    **OpenXML ECMA-376 Canonical Ordering**, `<w:cantSplit/>` table row protection, `<w:tblHeader/>` repeat headers, and surgical run splicer. Prevents Microsoft Word unreadable content repair prompts.
+  </Card>
+  <Card title="Spreadsheet / XLSX Engine" icon="pencil">
+    **2D Block Mutator with AST Formula Shifting**, Table Island Detection, DrawingML anchor preservation, and evaluation against **13 Universal Quality Gates (`UG-01..13`)**.
+  </Card>
+  <Card title="Technical Diagrams (Draw.io)" icon="seti:graphql">
+    Pure native `mxGraphModel` XML generation with orthogonal perimeter routing, dynamic geometry scaling, and high-DPI headless PNG/SVG rendering.
+  </Card>
+  <Card title="Universal AI Agent Integration" icon="laptop">
+    Native **Model Context Protocol (MCP)** STDIO server + Unified CLI Dispatcher. 1-Click integration for Cursor, Claude Code, Google Antigravity, Windsurf, and Codex CLI.
+  </Card>
+</CardGrid>
+
+---
+
+## The Deterministic AI-Native Difference
+
+| Evaluation Metric | Ad-hoc Library Scripts (`python-docx` / `openpyxl`) | Generic MCP Document Servers | Docwright AI Toolkits |
+|---|---|---|---|
+| **ECMA-376 Schema Compliance** | ❌ None (Ad-hoc XML generation) | ⚠️ Partial (Raw library wrappers) | **100% Strict Canonical Ordering** |
+| **Multi-page Table Integrity** | ❌ Splits rows randomly across pages | ❌ Unmanaged | **Guaranteed (`cantSplit` & `tblHeader`)** |
+| **Excel Formula Shifts** | ❌ Hardcodes static numbers | ⚠️ Basic string substitution | **AST Tokenizer & 2D Block Shift** |
+| **Corporate Template Logos** | ❌ Stripped upon resaving | ⚠️ Preserved only if untouched | **DrawingML Anchor & Collision Shield** |
+| **Scanned PDF Layout Mesh** | ❌ Hallucinates coordinates | ❌ Fails on complex layouts | **OpenCV Morphological Mesh Resolution** |
+| **Diagnostic Verification** | ❌ Silent file corruption | ⚠️ Basic try/catch blocks | **13 Universal Quality Gates (Fail-Closed)** |

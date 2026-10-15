@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 480" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#60a5fa" />
+    </linearGradient>
+    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#8b5cf6" />
+      <stop offset="100%" stop-color="#a78bfa" />
+    </linearGradient>
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#34d399" />
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.3" />
+    </filter>
+  </defs>
+
+  <rect width="900" height="480" rx="12" fill="url(#bgGrad)" />
+
+  <text x="450" y="42" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="700" fill="#f8fafc" text-anchor="middle">
+    Docwright AI Toolkits: 5-Layer Deterministic Architecture
+  </text>
+
+  <!-- Layer 5: AI & Interfaces -->
+  <g filter="url(#shadow)">
+    <rect x="50" y="70" width="800" height="60" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5" />
+    <rect x="50" y="70" width="8" height="60" rx="4" fill="#38bdf8" />
+    <text x="75" y="96" font-family="sans-serif" font-size="14" font-weight="700" fill="#38bdf8">Layer 5: AI IDEs &amp; Interfaces</text>
+    <text x="75" y="116" font-family="sans-serif" font-size="12" fill="#94a3b8">Cursor, Claude Code, Antigravity, Windsurf ➔ Native STDIO MCP Server &amp; Unified CLI Dispatcher</text>
+  </g>
+
+  <!-- Arrow -->
+  <path d="M 450 130 L 450 150" stroke="#475569" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- Layer 4: Operations & Registry -->
+  <g filter="url(#shadow)">
+    <rect x="50" y="150" width="800" height="60" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5" />
+    <rect x="50" y="150" width="8" height="60" rx="4" fill="#818cf8" />
+    <text x="75" y="176" font-family="sans-serif" font-size="14" font-weight="700" fill="#818cf8">Layer 4: Central Tool Registry &amp; Parameter Adapter</text>
+    <text x="75" y="196" font-family="sans-serif" font-size="12" fill="#94a3b8">51 Registered MCP Tools ➔ Parameter Auto-Adapting, Keyword Pruning, Fail-Closed Envelopes</text>
+  </g>
+
+  <!-- Layer 3: Contracts -->
+  <g filter="url(#shadow)">
+    <rect x="50" y="230" width="800" height="60" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5" />
+    <rect x="50" y="230" width="8" height="60" rx="4" fill="#a855f7" />
+    <text x="75" y="256" font-family="sans-serif" font-size="14" font-weight="700" fill="#a855f7">Layer 3: Open Pydantic Data Contracts</text>
+    <text x="75" y="276" font-family="sans-serif" font-size="12" fill="#94a3b8">DocSpec DSL, LayoutSpec, XlsxSpec, ResultEnvelope (Clean public schemas for LLM context)</text>
+  </g>
+
+  <!-- Layer 2: Quality Gates -->
+  <g filter="url(#shadow)">
+    <rect x="50" y="310" width="800" height="60" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5" />
+    <rect x="50" y="310" width="8" height="60" rx="4" fill="#34d399" />
+    <text x="75" y="336" font-family="sans-serif" font-size="14" font-weight="700" fill="#34d399">Layer 2: Universal Quality Gates (Fail-Closed Verification)</text>
+    <text x="75" y="356" font-family="sans-serif" font-size="12" fill="#94a3b8">13 Universal Gates (UG-01..13), 8 DOCX Gates (DG-01..08), DrawingML Collision Detection</text>
+  </g>
+
+  <!-- Layer 1: Core Protected Engine -->
+  <g filter="url(#shadow)">
+    <rect x="50" y="390" width="800" height="60" rx="8" fill="#0f172a" stroke="#0ea5e9" stroke-width="2" />
+    <rect x="50" y="390" width="8" height="60" rx="4" fill="#0ea5e9" />
+    <text x="75" y="416" font-family="sans-serif" font-size="14" font-weight="700" fill="#38bdf8">Layer 1: Binary-Protected Core Compilation Engines (C-Extensions .pyd)</text>
+    <text x="75" y="436" font-family="sans-serif" font-size="12" fill="#94a3b8">TagOrderRegistry (ECMA-376), 2D BlockMutator, AST Formula Shifter, OpenCV Layout Measurer</text>
+  </g>
+</svg>

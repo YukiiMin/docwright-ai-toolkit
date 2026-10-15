@@ -1,0 +1,71 @@
+---
+title: "Cookbook: Multi-Page Executive Word Report"
+description: Building a clean corporate Word report with repeated headers and zero row splitting.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+This cookbook demonstrates how to generate a multi-page executive report with complex data tables using `docx.build_document`.
+
+---
+
+## The Problem
+When generating reports that exceed 2 pages in Word, naive scripts create tables where:
+- Rows split across the page boundary, cutting text in half.
+- Pages 2, 3, and 4 have no column headers, leaving the reader disoriented.
+
+---
+
+## Solution Steps
+
+<Steps>
+1. **Define the Page Setup**:
+   Set standard A4 margins (2.0 cm top/bottom, 2.5 cm left/right).
+
+2. **Structure the Table with Header Protection**:
+   In `DocSpec`, configure `headers: ["Category", "Q1 Actual", "Q2 Budget", "Variance"]` and add row items.
+
+3. **Compile via Docwright**:
+   Invoke `docx.build_document`. The engine automatically injects `<w:cantSplit/>` on all table rows and `<w:tblHeader/>` on header rows.
+</Steps>
+
+### Sample `DocSpec` JSON Payload
+
+```json
+{
+  "spec": {
+    "title": "Annual Executive Strategy Review",
+    "page_setup": {
+      "orientation": "portrait",
+      "margin_top_cm": 2.0,
+      "margin_bottom_cm": 2.0,
+      "margin_left_cm": 2.5,
+      "margin_right_cm": 2.5
+    },
+    "blocks": [
+      {
+        "type": "heading",
+        "level": 1,
+        "text": "Division Performance Summary"
+      },
+      {
+        "type": "table",
+        "headers": ["Business Unit", "Target ($M)", "Delivered ($M)", "Status"],
+        "col_widths": [0.35, 0.20, 0.20, 0.25],
+        "rows": [
+          ["Enterprise Cloud Services", "120.0", "134.5", "Exceeded"],
+          ["AI Infrastructure Core", "85.0", "98.2", "Exceeded"],
+          ["Cybersecurity Operations", "45.0", "44.1", "On Track"]
+        ]
+      }
+    ]
+  },
+  "output_path": "output/annual_strategy_review.docx"
+}
+```
+
+### Result
+
+Word automatically repeats column headers at the top of every subsequent page, and table rows never tear across page boundaries.
+
+![Multi-page Clean Report Preview](/images/placeholders/word-report.jpg)

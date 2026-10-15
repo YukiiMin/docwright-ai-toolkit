@@ -1,0 +1,56 @@
+---
+title: Tool Reference Catalog
+description: Complete reference for all 51 MCP tools and CLI operations in Docwright.
+---
+
+Docwright exposes **51 specialized tools** organized across Word (DOCX), Spreadsheet (XLSX), and Diagram domains.
+
+All tools can be discovered and executed via the **Model Context Protocol (MCP)** or the **Unified CLI Dispatcher**.
+
+---
+
+## Tool Catalog Summary
+
+| Namespace | Tool Count | Core Capabilities |
+|---|---|---|
+| [`docx.*`](/reference/docx-tools/) | **19 Tools** | Document building, template rendering, layout measurement from PDF, text population, OpenXML validation, and surgical text patching. |
+| [`xlsx.*`](/reference/xlsx-tools/) | **26 Tools** | 2D block mutation, table island detection, formula recalculation, structural diffing, format profiling, and Universal Gate validation. |
+| [`diagram.*`](/reference/diagram-tools/) | **6 Tools** | Native Draw.io mxGraphModel XML building, layout planning, and headless high-DPI PNG/SVG rendering. |
+
+---
+
+## Discovering Tools via CLI
+
+```bash
+# List all 51 registered tools
+docwright list
+
+# Inspect exact Pydantic schema and arguments for any tool
+docwright schema docx.build_document
+docwright schema xlsx.mutate_block
+docwright schema diagram.build
+```
+
+---
+
+## Standard Diagnostic Envelope
+
+Every tool invocation returns a standardized JSON `ResultEnvelope`:
+
+```json
+{
+  "success": true,
+  "data": {
+    "file_path": "output/executive_report.docx",
+    "page_count": 6
+  },
+  "diagnostics": {
+    "errors": [],
+    "warnings": [],
+    "info": [
+      { "code": "INF_DOCX_CANTSPLIT", "message": "Applied cantSplit to 36 table rows" }
+    ]
+  },
+  "duration_ms": 142
+}
+```
