@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "docwright-ai-toolkit"
-version = "1.0.0"
+version = "1.0.1"
 description = "The AI-Native Office & Diagram Toolkit Plugin for AI Agents (Word, Excel, Technical Diagrams)"
 readme = "README.md"
 authors = [{ name = "YukiiMin" }]
@@ -41,6 +41,12 @@ dependencies = [
 [project.scripts]
 docwright = "doctools.cli:main"
 docwright-mcp = "doctools.mcp_server:main"
+
+[project.urls]
+Homepage = "https://github.com/YukiiMin/docwright-ai-toolkit"
+Repository = "https://github.com/YukiiMin/docwright-ai-toolkit"
+Issues = "https://github.com/YukiiMin/docwright-ai-toolkit/issues"
+Documentation = "https://github.com/YukiiMin/docwright-ai-toolkit#readme"
 
 [tool.setuptools.packages.find]
 where = ["."]
