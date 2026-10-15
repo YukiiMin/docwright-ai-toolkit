@@ -1,0 +1,14 @@
+{
+  "tools": [
+    {
+      "type": "bash",
+      "command_prefix": "docwright",
+      "description": "Deterministic office document (DOCX/XLSX) and diagram engine. Use 'docwright list' to discover tools, 'docwright schema <tool>' for argument contracts, and 'docwright <tool> --spec <file.json>' for execution."
+    }
+  ],
+  "mcpServers": {
+    "docwright": {
+      "command": "docwright-mcp"
+    }
+  }
+}

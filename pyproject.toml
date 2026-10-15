@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "docwright-ai-toolkit"
+version = "1.0.0"
+description = "The AI-Native Office & Diagram Toolkit Plugin for AI Agents (Word, Excel, Technical Diagrams)"
+readme = "README.md"
+authors = [{ name = "YukiiMin" }]
+license = { text = "BSL-1.1" }
+requires-python = ">=3.10"
+keywords = [
+    "mcp",
+    "ai-agents",
+    "docx",
+    "xlsx",
+    "diagram",
+    "cursor",
+    "claude",
+    "windsurf",
+    "antigravity",
+    "office-toolkit"
+]
+dependencies = [
+    "pydantic>=2.10.0",
+    "mcp>=1.26.0",
+    "python-docx>=1.2.0",
+    "openpyxl>=3.1.2",
+    "lxml>=5.0.0",
+    "jinja2>=3.1.5",
+    "docxtpl>=0.20.0",
+    "docxcompose>=2.2.0",
+    "pdf2docx>=0.5.13",
+    "pymupdf>=1.26.7",
+    "pillow>=10.0.0",
+    "pyyaml>=6.0",
+    "msgpack>=1.0.8",
+]
+
+[project.scripts]
+docwright = "doctools.cli:main"
+docwright-mcp = "doctools.mcp_server:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["doctools*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,17 @@
+Business Source License 1.1
+
+Parameters:
+  Licensor: YukiiMin
+  Licensed Work: Docwright AI Toolkits (docwright-ai-toolkit)
+  Additional Use Grant: Free for personal use, individual developers, open-source projects,
+                        educational environments, and direct integration with AI IDEs/Agents
+                        (including Cursor, Claude Desktop/Code, Google Antigravity, Windsurf,
+                        and local/private agent workflows).
+  Change Date: 2030-01-01
+  Change License: Apache License, Version 2.0
+
+Notice:
+The Licensor hereby grants you the right to copy, modify, create derivative works, redistribute,
+and make non-production and permitted production use of the Licensed Work subject to the terms herein.
+Commercial hosting of the core engine as a paid third-party multi-tenant SaaS service requires a separate
+commercial agreement from the Licensor.

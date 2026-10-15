@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "docwright": {
+      "command": "docwright-mcp"
+    }
+  }
+}
