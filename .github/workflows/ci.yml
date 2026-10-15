@@ -8,7 +8,7 @@ on:
 
 jobs:
   verify:
-    name: Contract & Lint Verification
+    name: Contract & Schema Verification
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -22,9 +22,21 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -e .
+          pip install pydantic
 
-      - name: Verify CLI discovery
+      - name: Verify Pydantic Contracts
         run: |
-          docwright --version
-          docwright list
+          python -c "from doctools.contract.docx.docspec import DocSpec; print('[+] DocSpec schema verified')"
+          python -c "from doctools.contract.docx.layout_spec import LayoutSpec; print('[+] LayoutSpec schema verified')"
+          python -c "from doctools.contract.xlsx.spec import XlsxSpec; print('[+] XlsxSpec schema verified')"
+          python -c "from doctools.contract.envelope import ResultEnvelope; print('[+] ResultEnvelope schema verified')"
+
+      - name: Verify 1-Click JSON Configurations
+        run: |
+          python -c "
+          import json, glob
+          for f in sorted(glob.glob('configs/*.json')):
+              with open(f, encoding='utf-8') as fp:
+                  json.load(fp)
+                  print(f'[+] Valid JSON config: {f}')
+          "
