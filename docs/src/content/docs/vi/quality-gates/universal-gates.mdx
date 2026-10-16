@@ -1,0 +1,34 @@
+---
+title: Hệ Thống Kiểm Định Chất Lượng Tự Động
+description: Cách Docwright kiểm tra độ toàn vẹn của tài liệu Word và bảng tính Excel thông qua docx.validate và xlsx.validate.
+---
+
+Mọi tài liệu được khởi tạo hoặc chỉnh sửa bởi Docwright đều có thể kiểm định tự động thông qua **`docx.validate`** (cho Word) và **`xlsx.validate`** (cho Excel).
+
+---
+
+## 1. Các Tiêu Chí Kiểm Định Bảng Tính Excel (`xlsx.validate`)
+
+Khi gọi `xlsx.validate`, hệ thống tự động rà soát bảng tính qua các nhóm tiêu chí cốt lõi:
+
+| Nhóm Kiểm Tra | Nội Dung Xác Thực | Lợi Ích Thực Tế |
+| :--- | :--- | :--- |
+| **Toàn Vẹn Công Thức** | Quét toàn bộ các ô công thức để phát hiện lỗi cú pháp hoặc lỗi tham chiếu (`#REF!`, `#NAME?`, `#VALUE!`, `#N/A`, `#DIV/0!`). | Đảm bảo không có ô tổng hợp nào bị hỏng sau khi chèn hoặc xóa dòng. |
+| **Công Thức Động Cho Ô Tổng Hợp** | Kiểm tra các dòng Tổng cộng / KPI sử dụng công thức động (`=SUM`, `=COUNTIF`) thay vì gõ số chết. | Giúp bảng tính luôn tự động cập nhật khi số liệu thay đổi. |
+| **Đồng Bộ Khung Viền Vùng Gộp Ô** | Đảm bảo giá trị chỉ đặt tại ô neo trên-trái và đường viền được đồng bộ quanh toàn bộ vùng gộp. | Ngăn chặn lỗi mất nét kẻ khung viền trên bảng tính. |
+| **Làm Mới Bộ Nhớ Đệm Công Thức** | Kiểm tra các ô công thức đã được cập nhật giá trị hiển thị (`<v>`) qua `xlsx.recalc`. | Giúp người xem hoặc trình xuất PDF thấy ngay kết quả tính toán. |
+| **Bảo Toàn Logo & Hình Ảnh** | Xác nhận các đối tượng đồ họa, logo trang bìa và biểu đồ từ file mẫu được giữ nguyên vẹn. | Không làm mất nhận diện thương hiệu của doanh nghiệp. |
+| **Rà Soát Biến Mẫu Còn Sót** | Quét toàn bộ các ô để phát hiện các thẻ `{{...}}`, `<TBD>`, `[TODO]` chưa được điền. | Đảm bảo không sót dữ liệu nháp khi bàn giao cho khách hàng. |
+
+---
+
+## 2. Các Tiêu Chí Kiểm Định Tài Liệu Word (`docx.validate`)
+
+Khi gọi `docx.validate`, hệ thống kiểm tra cấu trúc và bố cục của tệp `.docx`:
+
+| Nhóm Kiểm Tra | Nội Dung Xác Thực | Lợi Ích Thực Tế |
+| :--- | :--- | :--- |
+| **Trật Tự Thẻ XML Chuẩn ECMA-376** | Kiểm tra các thuộc tính bảng (`tblPr`), thuộc tính ô (`tcPr`), khung viền và căn lề tuân thủ đúng thứ tự chuẩn của Microsoft Word. | Ngăn chặn triệt để thông báo lỗi *"Word found unreadable content"* khi mở file. |
+| **Bảo Vệ Bảng Nhiều Trang** | Xác nhận bảng có cờ chống cắt đôi hàng (`cantSplit`) và tự động lặp dòng tiêu đề (`tblHeader`). | Giúp bảng biểu dài nhiều trang luôn rõ ràng, chuyên nghiệp. |
+| **Khổ Giấy & Lề Trang In** | Kiểm tra tổng độ rộng các cột bảng và kích thước ảnh nằm gọn trong vùng in của trang giấy. | Tránh hiện tượng bảng hoặc ảnh bị tràn lề phải khi xuất PDF / in ấn. |
+| **Rà Soát Thẻ Jinja Còn Sót** | Quét toàn bộ văn bản, bảng biểu, tiêu đề đầu/cuối trang để phát hiện thẻ `{{ ... }}` chưa được điền. | Đảm bảo 100% biến mẫu đã được thay thế bằng dữ liệu thật. |

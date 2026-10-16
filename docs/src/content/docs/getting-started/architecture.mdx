@@ -1,34 +1,42 @@
 ---
-title: 5-Layer Deterministic Architecture
-description: Understanding Docwright's Open Interface, Protected Engine architecture.
+title: Architecture & Module Inventory
+description: Overview of Docwright's 2 core document engines, 1 utility module, and the ResultEnvelope contract.
 ---
 
-Docwright AI Toolkits enforces a strict **5-layer separation of concerns** between AI agents and binary enterprise file formats:
+![Docwright Architecture Overview](/images/diagrams/architecture-overview.svg)
 
-![5-Layer Deterministic Architecture](/images/diagrams/architecture-5-layer.svg)
+## Truthful Module Inventory (51 Tools Total)
+
+Docwright consists of **2 core document engineering modules** and **1 common utility module**:
+
+| Module Namespace | Registered Tools | Primary Capabilities |
+| :--- | :--- | :--- |
+| **Word Module (`docx.*`)** | **19 Tools** | Declarative `DocSpec` generation, Jinja2 template normalization & rendering, style-preserving run patching, 2-tier faithful extraction, and computer-vision scanned PDF layout reconstruction. |
+| **Excel Module (`xlsx.*`)** | **31 Tools** | 3-tier faithful extraction (`extract`/`query`), 2D Table Island detection, block row/column insertion with automatic formula range shifting, headless LibreOffice recalculation, and 13 quality validation gates. |
+| **Common Module (`common.*`)** | **1 Tool** | High-efficiency JSON minification and subtree pruning (`common.compact_json`) to minimize LLM token consumption. |
 
 ---
 
-## The 5 Layers Explained
+## Standardized `ResultEnvelope` Contract
 
-### Layer 5: Interfaces (CLI & Native MCP Server)
-- Provides standard JSON-RPC 2.0 communication over standard input/output (`stdio`).
-- Provides unified CLI dispatcher `docwright <tool_name> --spec <file.json>`.
-- Returns standard POSIX exit codes: `0` (clean), `1` (warnings), `2` (gate failures), `64` (usage error).
+Every tool execution across MCP, Python SDK, and CLI returns a uniform `ResultEnvelope` object:
 
-### Layer 4: Operations & Central Tool Registry
-- Central dispatcher managing 51 registered tools across DOCX, XLSX, and Diagram domains.
-- **Smart Parameter Adapter**: Automatically bridges parameter discrepancies (`file_ref` vs `file_path`) and prunes unexpected kwargs passed by LLMs.
-- Wraps all execution outputs in standardized diagnostic envelopes.
-
-### Layer 3: Open Pydantic Data Contracts
-- 100% open, typed Pydantic models (`DocSpec`, `LayoutSpec`, `XlsxSpec`, `ResultEnvelope`).
-- Exposes complete JSON Schemas with field-level descriptions for LLMs to generate valid structured payloads.
-
-### Layer 2: Universal Quality Gates
-- **13 Universal Gates (`UG-01..13`)**: Validates formula integrity, merged cell borders, number formatting tokens, and DrawingML collision safety before any file is saved.
-- **8 DOCX Gates (`DG-01..08`)**: Enforces paragraph termination, table row splitting prevention, and image bounds.
-
-### Layer 1: Core Compilation Engines (C-Extensions)
-- High-performance, protected binary modules compiled with Cython GCC.
-- Enforces ECMA-376 OpenXML canonical tag order registry, 2D block formula AST shifting, and OpenCV layout measurement.
+```json
+{
+  "success": true,
+  "result": {
+    "output_path": "output/report_verified.docx",
+    "tables_built": 2
+  },
+  "diagnostics": {
+    "errors": [],
+    "warnings": [],
+    "info": [
+      {
+        "code": "DOCX_BUILD_OK",
+        "message": "Document built and verified cleanly."
+      }
+    ]
+  }
+}
+```

@@ -1,0 +1,80 @@
+---
+title: Mô-đun Xử Lý Tài Liệu Word (docx.*)
+description: Hướng dẫn chi tiết 19 công cụ docx.* để khởi tạo báo cáo, điền biểu mẫu Jinja, vá văn bản và tái tạo biểu mẫu từ PDF scan.
+---
+
+**Mô-đun Word (`docx.*` — 19 Công cụ)** cung cấp trọn bộ giải pháp tự động hóa cho tệp `.docx`: dựng tài liệu từ cấu trúc JSON `DocSpec`, điền dữ liệu vào biểu mẫu doanh nghiệp Jinja2, chỉnh sửa câu chữ mà không làm mất định dạng gốc, và chuyển đổi phiếu khảo sát PDF scan sang bảng Word chỉnh sửa được.
+
+![Quy trình xử lý Word](/images/diagrams/docx-pipeline.svg)
+
+---
+
+## 1. Tự Động Bảo Vệ Bảng Biểu Nhiều Trang (Multi-Page Tables)
+
+Khi xuất các bảng dữ liệu dài nhiều trang trong Word, hai lỗi trình bày phổ biến nhất là:
+- Một ô có nhiều dòng văn bản bị cắt làm đôi ở cuối Trang 1 và đầu Trang 2.
+- Sang Trang 2, người đọc không còn thấy dòng tiêu đề cột (`Header Row`) của bảng.
+
+Trình dựng bảng của Docwright tự động khóa toàn bộ các hàng không bị cắt ngang qua trang, tự động lặp lại dòng tiêu đề ở đầu mỗi trang mới, và gắn kết các dòng tiêu đề mục (`keep_with_next`) đi liền với dòng dữ liệu ngay dưới nó.
+
+![Cơ chế bảo vệ bảng nhiều trang trên Word](/images/diagrams/docx-multipage-table.svg)
+
+> [!TIP]
+> **Gợi Ý Chụp Ảnh Thực Tế (Nếu Bạn Muốn Thay Hoặc Bổ Sung Ảnh Chụp Màn Hình):**
+> Bạn có thể mở file `data-set/output-data/phong-van-khao-sat-phase15-v4.docx` trong Microsoft Word, cuộn đến **điểm giao nhau giữa cuối Trang 1 và đầu Trang 2**, rồi chụp ảnh màn hình cho thấy dòng tiêu đề (`Nội dung | Thông tin | Ghi chú`) tự động lặp lại ở đầu Trang 2 và câu hỏi dài được đẩy nguyên vẹn sang trang mới.
+
+---
+
+## 2. Ba Quy Trình Xử Lý Word Trọng Tâm
+
+### Quy Trình A: Điền Biểu Mẫu Doanh Nghiệp Jinja2 (`docx.normalize_template` + `docx.render_template`)
+
+Khi người dùng gõ một biến như `{{ ten_khach_hang }}` trong Word, bộ kiểm tra chính tả của Word thường ngầm tách chuỗi này thành nhiều thẻ XML `<w:r>` rời rạc. Hãy gọi `docx.normalize_template` trước khi điền dữ liệu để nối liền toàn bộ thẻ Jinja:
+
+```python
+from doctools.operations.docx import docx_normalize_template, docx_render_template, docx_validate
+
+# 1. Hàn gắn các thẻ {{ ... }} bị tách rời trong biểu mẫu
+docx_normalize_template(
+    file_ref="templates/hop_dong_mau.docx",
+    output_path="templates/hop_dong_chuan_hoa.docx",
+)
+
+# 2. Điền dữ liệu JSON vào biểu mẫu
+docx_render_template(
+    template_path="templates/hop_dong_chuan_hoa.docx",
+    output_path="output/hop_dong_khach_hang.docx",
+    context={
+        "ten_khach_hang": "Công ty TNHH Giải Pháp Số",
+        "ngay_hieu_luc": "16/10/2026",
+        "hang_muc": [
+            {"dich_vu": "Bản quyền nền tảng lõi", "chi_phi": "50.000.000 VNĐ"},
+            {"dich_vu": "Hỗ trợ kỹ thuật 24/7", "chi_phi": "12.000.000 VNĐ"},
+        ],
+    },
+)
+
+# 3. Kiểm định chất lượng file xuất ra
+res = docx_validate(file_ref="output/hop_dong_khach_hang.docx")
+print("Kiểm định thành công:", res.success)
+```
+
+### Quy Trình B: Vá Văn Bản Giữ Nguyên Định Dạng (`docx.patch`)
+
+Khi cần sửa một điều khoản, số tiền hoặc ngày tháng trên tài liệu có sẵn mà không dùng biến Jinja, `docx.patch` sẽ tìm đúng cụm từ mục tiêu và thay thế nội dung mà vẫn giữ nguyên 100% phông chữ, cỡ chữ, in đậm/in nghiêng và màu sắc của đoạn văn gốc.
+
+```bash
+docwright docx.patch --json '{
+  "file_ref": "output/hop_dong_khach_hang.docx",
+  "output_path": "output/hop_dong_khach_hang_v2.docx",
+  "patches": [
+    {"target_text": "50.000.000 VNĐ", "replacement_text": "45.000.000 VNĐ"}
+  ]
+}'
+```
+
+### Quy Trình C: Tái Tạo Biểu Mẫu Word 1:1 Từ PDF Scan
+
+1. **`docx.measure_pdf_layout`**: Đo đạc tọa độ đường kẻ bảng, tỷ lệ độ rộng cột và chiều cao hàng từ trang PDF scan, gán mã định danh cho từng ô (`c0_0`, `c0_1`, ...).
+2. **`docx.populate_layout_text`**: Nạp nội dung chữ vào đúng mã `cell_id` (hỗ trợ gộp hàng `row_span` và gộp cột `col_span`).
+3. **`docx.compile_layout_spec`**: Biên dịch thành tệp `.docx` hoàn chỉnh.

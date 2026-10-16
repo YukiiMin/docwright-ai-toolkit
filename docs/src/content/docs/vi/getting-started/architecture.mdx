@@ -1,0 +1,42 @@
+---
+title: Kiến Trúc & Danh Mục Mô-đun
+description: Tổng quan 2 mô-đun xử lý tài liệu cốt lõi, 1 mô-đun tiện ích và chuẩn dữ liệu trả về ResultEnvelope.
+---
+
+![Tổng quan Kiến trúc Docwright](/images/diagrams/architecture-overview.svg)
+
+## Danh Mục Mô-đun Thực Tế (Tổng Cộng 51 Công Cụ)
+
+Docwright bao gồm **2 mô-đun xử lý tài liệu cốt lõi** và **1 mô-đun tiện ích chung**:
+
+| Mô-đun | Số lượng Tool | Năng lực cốt lõi |
+| :--- | :--- | :--- |
+| **Mô-đun Word (`docx.*`)** | **19 Tools** | Khởi tạo tài liệu từ `DocSpec`, chuẩn hóa & điền biểu mẫu Jinja2, vá văn bản bảo toàn định dạng, trích xuất dữ liệu 2 tầng và tái tạo biểu mẫu từ file PDF scan. |
+| **Mô-đun Excel (`xlsx.*`)** | **31 Tools** | Trích xuất dữ liệu 3 tầng (`extract`/`query`), nhận diện đảo bảng 2D (`detect_tables`), chèn khối tự động dịch vùng công thức (`mutate_block`), tính toán lại qua LibreOffice (`recalc`) và kiểm định 13 tiêu chí chất lượng. |
+| **Mô-đun Chung (`common.*`)** | **1 Tool** | Nén gọn JSON và trích xuất nhánh con (`common.compact_json`) giúp tiết kiệm tối đa lượng token tiêu thụ của AI. |
+
+---
+
+## Chuẩn Kết Quả Trả Về `ResultEnvelope`
+
+Mọi công cụ khi gọi qua MCP, Python SDK hay CLI đều trả về đối tượng `ResultEnvelope` đồng nhất:
+
+```json
+{
+  "success": true,
+  "result": {
+    "output_path": "output/bao_cao_da_kiem_dinh.docx",
+    "tables_built": 2
+  },
+  "diagnostics": {
+    "errors": [],
+    "warnings": [],
+    "info": [
+      {
+        "code": "DOCX_BUILD_OK",
+        "message": "Document built and verified cleanly."
+      }
+    ]
+  }
+}
+```

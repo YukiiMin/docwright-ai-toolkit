@@ -1,0 +1,63 @@
+---
+title: "Kịch Bản Mẫu: Tái Tạo Biểu Mẫu Word 1:1 Từ PDF Scan"
+description: Quy trình 3 bước chuyển đổi phiếu khảo sát hoặc biểu mẫu PDF scan thành file Word chỉnh sửa được.
+---
+
+Khi xử lý các phiếu khảo sát hoặc biểu mẫu hành chính dạng PDF scan, Docwright cung cấp quy trình 3 bước giúp giữ nguyên tỷ lệ cột và cấu trúc ô gộp:
+
+1. **`docx.measure_pdf_layout`**: Đo lưới bảng, tỷ lệ độ rộng cột, chiều cao hàng từ ảnh trang PDF và gán mã ô (`c0_0`, `c0_1`, ...).
+2. **`docx.populate_layout_text`**: Điền nội dung văn bản vào từng ô theo mã `cell_id`.
+3. **`docx.compile_layout_spec`**: Biên dịch ra file `.docx` hoàn chỉnh.
+
+---
+
+## Ví Dụ Hoàn Chỉnh Bằng Python SDK
+
+```python
+from doctools.operations.docx import (
+    docx_measure_pdf_layout,
+    docx_populate_layout_text,
+    docx_compile_layout_spec,
+    docx_validate,
+)
+
+# Bước 1: Đo tọa độ lưới bảng từ file PDF scan
+measured = docx_measure_pdf_layout(
+    pdf_path="scans/phieu_khao_sat.pdf",
+    output_layout_path="scratch/survey_layout.json",
+    dpi=200,
+)
+
+# Bước 2: Điền nội dung chữ vào các ô theo cell_id
+populated = docx_populate_layout_text(
+    layout_spec_path="scratch/survey_layout.json",
+    output_path="scratch/survey_populated.json",
+    pages_text={
+        "1": {
+            "tables": [
+                {
+                    "table_index": 0,
+                    "cells": {
+                        "c0_0": {"text": "Nội dung câu hỏi", "bold": True, "align": "center"},
+                        "c0_1": {"text": "Thông tin ghi nhận", "bold": True, "align": "center"},
+                        "c1_0": {"text": "1. Quy trình phê duyệt hiện tại", "bold": True},
+                        "c1_1": {"text": "", "row_span": 2},
+                        "c2_0": {"text": "** Gợi ý: Nêu rõ thời gian xử lý trung bình", "italic": True},
+                    },
+                }
+            ]
+        }
+    },
+)
+
+# Bước 3: Biên dịch thành file Word (.docx)
+compiled = docx_compile_layout_spec(
+    layout_spec_path="scratch/survey_populated.json",
+    output_path="output/phieu_khao_sat_tai_tao.docx",
+    merge_continued_tables=False,
+)
+
+# Bước 4: Kiểm định chất lượng tài liệu
+validation = docx_validate(file_ref="output/phieu_khao_sat_tai_tao.docx")
+print("Tái tạo thành công:", validation.success)
+```

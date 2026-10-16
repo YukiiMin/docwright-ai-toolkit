@@ -1,30 +1,35 @@
 ---
-title: 13 Universal Quality Gates (UG-01..13)
-description: Exhaustive specification of the 13 Universal Gates protecting spreadsheet integrity.
+title: Automated Quality Gates (Word & Excel)
+description: How Docwright verifies generated and mutated documents before delivery usingdocx.validate and xlsx.validate.
 ---
 
-Before any spreadsheet file is finalized, Docwright evaluates it against **13 Universal Quality Gates**:
-
-| Gate Code | Name | Invariant Checked | Severity |
-|---|---|---|---|
-| `UG-01` | **Formula Dependency Check** | Detects broken formula references (`#REF!`, circular dependencies). | ERROR |
-| `UG-02` | **Merged Cell Safety** | Values must be assigned strictly to Top-Left cells; checks for clipped text. | ERROR |
-| `UG-03` | **Dynamic KPI Formulas** | Summary rows must compute values via dynamic formulas (`=SUM`), not static text. | WARNING |
-| `UG-04` | **Number Formatting Consistency** | Number formatting tokens must match template column conventions. | WARNING |
-| `UG-05` | **DrawingML Anchor Collision** | Mutated blocks must not intersect with logos, charts, or drawing shapes. | ERROR |
-| `UG-06` | **Border Synchronization** | Merged cell ranges must have synchronized perimeter border styles. | WARNING |
-| `UG-07` | **Table Island Separation** | Enforces minimum whitespace corridor (at least 1 row) between distinct tables. | WARNING |
-| `UG-08` | **Empty Sheet Prevention** | Workbooks must not contain empty or uninitialized worksheets. | ERROR |
-| `UG-09` | **Recalc Cache Staleness** | Verifies formula calculation caches in `<v>` tags are updated. | WARNING |
-| `UG-10` | **Date & Time Token Compliance** | ISO-8601 formatting tokens strictly validated. | WARNING |
-| `UG-11` | **Hidden Worksheet Audit** | Audits workbook for unexpectedly hidden sensitive worksheets. | INFO |
-| `UG-12` | **Print Area & Page Setup** | Enforces printable grid margins and landscape/portrait constraints. | INFO |
-| `UG-13` | **Strict Workbook Close Safety** | Guarantees all zip file streams are cleanly flushed and closed. | ERROR |
+Every document built or modified by Docwright can be verified automatically using **`docx.validate`** (for Word files) and **`xlsx.validate`** (for Excel workbooks).
 
 ---
 
-## Running Gate Validation via CLI
+## 1. Spreadsheet Quality Checks (`xlsx.validate`)
 
-```bash
-docwright xlsx.validate --spec '{"file_path": "finance/quarterly_budget.xlsx"}'
-```
+When you run `xlsx.validate`, the engine inspects the workbook across **13 automated checks**:
+
+| Check Category | What It Verifies | Why It Matters |
+| :--- | :--- | :--- |
+| **Formula Integrity** | Scans every formula cell for syntax errors and evaluation faults (`#REF!`, `#NAME?`, `#VALUE!`, `#N/A`, `#DIV/0!`). | Prevents broken summary metrics after inserting or deleting rows. |
+| **Live Summary Formulas** | Verifies that total and KPI rows contain dynamic formulas (`=SUM`, `=COUNTIF`) rather than hardcoded static numbers. | Ensures spreadsheets remain dynamically recalculable. |
+| **Merged Cell Consistency** | Ensures values are stored strictly in the top-left anchor cell and borders are synchronized across the entire merged rectangular range. | Prevents missing border lines and ghost cell values in Excel. |
+| **Formula Cache Freshness** | Checks that formula cells have up-to-date cached results (`<v>`) populated by `xlsx.recalc`. | Allows downstream viewers and PDF exporters to see calculated numbers immediately. |
+| **DrawingML & Logo Preservation** | Confirms that embedded cover-sheet logos, shapes, and charts from the template workbook remain intact. | Prevents accidental stripping of corporate branding. |
+| **Unresolved Placeholders** | Scans all cells for leftover template tokens (`{{...}}`, `<TBD>`, `[TODO]`). | Guarantees no raw template variables leak into client deliverables. |
+
+---
+
+## 2. Word Document Quality Checks (`docx.validate`)
+
+When you run `docx.validate`, the engine verifies **8 structural and layout checks**:
+
+| Check Category | What It Verifies | Why It Matters |
+| :--- | :--- | :--- |
+| **OpenXML Schema Element Ordering** | Verifies that table properties (`tblPr`), cell properties (`tcPr`), borders, and margins follow canonical ECMA-376 element sequences. | Prevents Microsoft Word from showing *"Word found unreadable content"* prompts. |
+| **Multi-Page Table Pagination** | Checks that multi-page tables have row-split locks (`cantSplit`) and repeating header rows (`tblHeader`). | Eliminates rows cut in half across page breaks. |
+| **Cell Paragraph Termination** | Confirms every table cell ends with a valid paragraph element. | Required by the OpenXML specification for valid table structures. |
+| **Printable Margin Bounds** | Verifies that table total widths and embedded images fit within the page's printable width (`page_width - left_margin - right_margin`). | Prevents tables and images from clipping off the right edge of the page. |
+| **Unresolved Jinja Tags** | Scans paragraphs, headers, footers, and tables for leftover `{{ ... }}` or `{% ... %}` tags. | Ensures all template variables were cleanly rendered. |

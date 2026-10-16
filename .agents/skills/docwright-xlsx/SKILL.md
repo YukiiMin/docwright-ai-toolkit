@@ -1,35 +1,46 @@
 ---
 name: docwright-xlsx
-description: Operational guide and decision tree for Excel spreadsheet engineering, 2D block mutation, and formula shifts.
+description: Complete operational guide for all 31 Excel (xlsx.*) tools and doctools.api SDK across MCP, Python, and CLI.
 ---
 
-# Docwright XLSX Engineering Skill
+# Docwright Spreadsheet (XLSX) Engineering Skill (31 Tools)
 
-Use this skill whenever reading, creating, expanding, repairing, or mutating Excel spreadsheets (`.xlsx`).
-
----
-
-## 1. Golden Rules of Spreadsheet Engineering
-
-1. **Never write static numbers into summary cells**: Always generate dynamic formulas (`=SUM(B5:B20)`, `=COUNTIF(...)`).
-2. **Never create blank `Workbook()` from scratch when modifying**: Load the existing template with `data_only=False` to preserve corporate logos and DrawingML shapes.
-3. **Handle merged cells safely**: Assign values strictly to the Top-Left cell of a merged range and synchronize perimeter borders.
+Use this skill whenever reading, creating, expanding, mutating, or validating Excel workbooks (`.xlsx`).
 
 ---
 
-## 2. Standard 2D Block Mutation Workflow
+## 1. Core Spreadsheet Workflows
 
-When inserting or updating rows/columns in an existing sheet:
+- **3-Tier Token-Safe Reading**:
+  1. `xlsx.preflight` or `xlsx.detect_tables` to inspect sheets and locate independent 2D Table Islands.
+  2. `xlsx.extract` or `xlsx.semantic_extract` to cache the faithful workbook model.
+  3. `xlsx.query` to retrieve targeted cell ranges (`A1:G30`) without overflowing LLM context windows.
+- **2D Block Insertion & Automatic Formula Shifting**:
+  1. Use `xlsx.mutate_block` (`operation="insert_rows"` or `"insert_cols"`) to insert data blocks.
+  2. The engine automatically clones row styles/borders and shifts all downstream `=SUM(...)`, `=AVERAGE(...)`, and KPI formula coordinates via AST parsing.
+- **Recalculation & Quality Verification**:
+  1. Run `xlsx.recalc` to refresh cached formula results (`<v>`) via headless LibreOffice.
+  2. Run `xlsx.validate` to verify formula syntax, merged-cell border consistency, and DrawingML preservation.
 
+---
+
+## 2. Python SDK (`doctools.api`) & CLI Quick Examples
+
+```python
+from doctools.api import (
+    load_workbook_model,
+    read_table,
+    get_key_values_by_labels,
+    TableIslandDetector,
+    xlsx_detect_tables,
+    xlsx_mutate_block,
+)
+from doctools.operations.xlsx import xlsx_recalc, xlsx_validate
 ```
-[ Step 1: xlsx.inspect / xlsx.detect_tables ]
-                     ↓
-[ Step 2: xlsx.mutate_block (with shift_direction='down') ]
-                     ↓
-[ Step 3: xlsx.recalc (recalculates formula cache <v>) ]
-                     ↓
-[ Step 4: xlsx.validate (audits 13 Universal Gates UG-01..13) ]
-```
 
-- `xlsx.mutate_block` tokenizes dependent formulas using an AST parser and shifts row indices automatically.
-- `xlsx.validate` checks formula validity (`#REF!`), border synchronization, and DrawingML collision before saving.
+```bash
+docwright schema xlsx.mutate_block
+docwright xlsx.mutate_block --spec insert_rows.json
+docwright compact-json extracted.json --path sheets.Summary -o compact.json
+docwright profile-scaffold template.xlsx --output profile.yaml
+```

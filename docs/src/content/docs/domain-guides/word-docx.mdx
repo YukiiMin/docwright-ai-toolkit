@@ -1,41 +1,81 @@
 ---
-title: Word (DOCX) Engine
-description: Deterministic compilation and OpenXML invariants for Microsoft Word.
+title: Word (DOCX) Engineering Module
+description: Complete guide to the 19 docx.* tools for building, templating, patching, and reconstructing Word documents.
 ---
 
-The Docwright Word (DOCX) Engine compiles declarative JSON specifications into Microsoft Word documents with strict OpenXML ECMA-376 schema guarantees.
+The **Word Module (`docx.*` — 19 Tools)** provides complete lifecycle automation for `.docx` documents: building reports from structured JSON, populating corporate Jinja templates, splicing edits into existing paragraphs without losing styles, and converting scanned PDF forms into editable Word tables.
 
----
-
-## Core Invariants Enforced
-
-### 1. The Last Paragraph Rule (`ERR_DOCX_001`)
-Every table cell (`<w:tc>`) MUST terminate with at least one paragraph (`<w:p>`). The engine automatically injects `<w:p/>` in empty cells to prevent Word repair dialogs.
-
-### 2. Run Text Overwrite Protection (`ERR_DOCX_002`)
-Never overwrite `cell.text = "..."` directly, which destroys font styles, bolding, colors, and margins inherited from corporate templates. Mutations route through the **Surgical Run Splicer**.
-
-### 3. Multi-page Table Integrity (`ERR_DOCX_003`)
-Multi-page tables automatically receive:
-- `<w:cantSplit/>` on all table rows to prevent rows from breaking mid-sentence across page splits.
-- `<w:tblHeader/>` on header rows to repeat column titles at the top of every new page.
-
-### 4. Dynamic Page Bounds (`ERR_DOCX_005`)
-Image widths and table columns are dynamically scaled based on printable margins read directly from `<w:pgSz>` and `<w:pgMar>`, rather than assuming fixed paper dimensions.
+![Word Processing Workflows](/images/diagrams/docx-pipeline.svg)
 
 ---
 
-## Dual Compilation Architecture
+## 1. Automatic Multi-Page Table Pagination Protection
 
-```mermaid
-graph TD
-    A["User / AI Request"] --> B{"Compilation Path"}
-    B -->|Path A: Variable Injection| C["docx.render_template (Jinja / docxtpl)"]
-    B -->|Path B: Algorithmic Synthesis| D["docx.build_document (DocSpec DSL)"]
-    C --> E["OpenXML TagOrderRegistry Guard"]
-    D --> E
-    E --> F["Valid .docx Document"]
+When generating long tables in Word, two common layout issues occur if pagination properties are omitted:
+- Tall cells split mid-sentence across the bottom of Page 1 and top of Page 2.
+- Page 2 displays data rows without repeating the column headers.
+
+Docwright's table builder automatically configures every table row with row-split prevention and repeating header rows, while locking full-width section banners (`keep_with_next`) to the first data row beneath them.
+
+![Multi-Page Table Pagination Protection](/images/diagrams/docx-multipage-table.svg)
+
+> [!TIP]
+> **What Screenshot Can You Add Here Later?**
+> If you want to showcase a real Word screenshot alongside the SVG diagram above, open `data-set/output-data/phong-van-khao-sat-phase15-v4.docx` in Microsoft Word, scroll to the boundary between **Page 1 and Page 2**, and capture a screenshot showing the table header (`Nội dung | Thông tin | Ghi chú`) automatically repeating at the top of Page 2 while the multi-line question block stays intact.
+
+---
+
+## 2. Three Primary Word Workflows
+
+### Workflow A: Corporate Jinja2 Templates (`docx.normalize_template` + `docx.render_template`)
+
+Word editors frequently split a single placeholder like `{{ client_name }}` across multiple internal XML `<w:r>` runs when a user edits text or runs spellcheck. Always run `docx.normalize_template` before rendering:
+
+```python
+from doctools.operations.docx import docx_normalize_template, docx_render_template, docx_validate
+
+# 1. Consolidate split {{ ... }} tags into clean runs
+docx_normalize_template(
+    file_ref="templates/contract_template.docx",
+    output_path="templates/contract_normalized.docx",
+)
+
+# 2. Populate template variables
+docx_render_template(
+    template_path="templates/contract_normalized.docx",
+    output_path="output/client_contract.docx",
+    context={
+        "client_name": "Vanguard Logistics Corp",
+        "effective_date": "2026-10-16",
+        "line_items": [
+            {"service": "Core Platform License", "amount": "$24,000"},
+            {"service": "Dedicated Support", "amount": "$6,000"},
+        ],
+    },
+)
+
+# 3. Validate structural integrity
+res = docx_validate(file_ref="output/client_contract.docx")
+print("Validation passed:", res.success)
 ```
 
-- **Path A (Template Rendering)**: Injects dynamic JSON data into pre-designed Word templates with Jinja tags (`{{ company_name }}`).
-- **Path B (DocSpec DSL)**: Generates complete documents from scratch using typed paragraph blocks, headings, callout boxes, and 2D table grids.
+### Workflow B: Surgical Style-Preserving Patching (`docx.patch`)
+
+When you need to update specific clauses, dates, or numbers in an existing `.docx` file that does not use Jinja placeholders, use `docx.patch`. Its run-splicing engine locates text even when split across multiple formatting runs and replaces the characters while preserving the exact font, size, bold/italic state, and color.
+
+```bash
+docwright docx.patch --json '{
+  "file_ref": "output/client_contract.docx",
+  "output_path": "output/client_contract_v2.docx",
+  "patches": [
+    {"target_text": "$24,000", "replacement_text": "$21,500"}
+  ]
+}'
+```
+
+### Workflow C: Scanned PDF to 1:1 Editable Word Form
+
+For scanned questionnaires, government forms, or legacy PDFs:
+1. **`docx.measure_pdf_layout`**: Uses OpenCV morphological line detection and skew correction to measure exact table column ratios and row heights, assigning each cell a deterministic ID (`c0_0`, `c0_1`, ...).
+2. **`docx.populate_layout_text`**: Injects transcribed text into the measured `LayoutSpec` by `cell_id` (supporting both `row_span` and `col_span`).
+3. **`docx.compile_layout_spec`**: Compiles the populated layout into a verified `.docx` document (`merge_continued_tables=False` for 1:1 print form parity, or `True` for compact continuous tables).

@@ -1,0 +1,30 @@
+---
+title: Cài Đặt & Thiết Lập Môi Trường
+description: Yêu cầu hệ thống, cách cài đặt gói PyPI và thiết lập LibreOffice phục vụ tính toán công thức Excel.
+---
+
+## 1. Yêu Cầu Hệ Thống & Cài Đặt Gói
+
+- **Python**: `>= 3.10` (Khuyến nghị Python `3.11`, `3.12` hoặc `3.13`).
+- **Gói phân phối**: Được đóng gói sẵn dưới dạng binary wheels tốc độ cao đi kèm hệ thống hợp đồng Pydantic mở.
+
+```bash
+pip install --upgrade docwright-ai-toolkit
+```
+
+Kiểm tra nhanh sau khi cài đặt:
+
+```bash
+docwright list
+docwright-mcp --help
+```
+
+---
+
+## 2. Tùy Chọn: Cài Đặt LibreOffice Cho `xlsx.recalc`
+
+Khi bạn chèn dòng hoặc sửa đổi bảng tính qua `xlsx.mutate` và `xlsx.mutate_block`, chuỗi công thức được cập nhật tự động. Nếu bạn muốn làm mới giá trị bộ nhớ đệm (`<v>`) của công thức ngay trên máy chủ mà không cần mở Microsoft Excel, hãy cài đặt **LibreOffice** để công cụ `xlsx.recalc` tính toán ngầm:
+
+- **Windows**: `winget install TheDocumentFoundation.LibreOffice`
+- **macOS**: `brew install --cask libreoffice`
+- **Ubuntu / Debian**: `sudo apt-get install -y libreoffice-calc`

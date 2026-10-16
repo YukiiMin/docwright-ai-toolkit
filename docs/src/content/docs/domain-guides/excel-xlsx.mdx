@@ -1,34 +1,54 @@
 ---
-title: Spreadsheets (XLSX) Engine
-description: 2D Block Mutator, AST formula shifting, and DrawingML preservation.
+title: Spreadsheets (XLSX) Engineering Module
+description: Complete guide to the 31 xlsx.* tools for 3-tier extraction, 2D table island detection, block mutation with formula shifting, and validation.
 ---
 
-The Docwright Spreadsheet (XLSX) Engine manages Excel workbooks without destroying calculation formulas, DrawingML logos, or table island layouts.
-
----
-
-## Key Capabilities
-
-### 1. 2D Block Mutator with AST Formula Shifting
-When an AI agent inserts a 2D block of rows into an existing sheet:
-- Traditional scripts break formulas like `=SUM(C10:C25)`.
-- Docwright tokenizes all formulas into an **Abstract Syntax Tree (AST)** and shifts row references automatically based on insertion coordinates.
-
-### 2. Table Island Detection (`xlsx.detect_tables`)
-Sheets often contain multiple independent tables separated by whitespace corridors. Docwright detects table island boundaries and calculates available clearance corridors before inserting rows.
-
-### 3. DrawingML Anchor & Collision Shield
-Corporate logos and chart shapes use DrawingML anchor coordinates (`<xdr:twoCellAnchor>`). Docwright locks anchor coordinates and prevents row expansions from distorting logos or overlapping charts.
-
-### 4. Recalc Cache Injector (`xlsx.recalc`)
-Excel relies on cached formula calculation values stored in cell `<v>` tags. When formulas are updated programmatically, Docwright calculates formula results and updates `<v>` tags so formulas display correctly in third-party viewers.
+The **Excel Module (`xlsx.*` — 31 Tools)** enables AI agents and Python developers to read complex multi-sheet workbooks without overflowing token limits, and to insert or modify data blocks while keeping formulas, merged cells, borders, and embedded logos intact.
 
 ---
 
-## 14 Invariants (E1–E14)
+## 1. 2D Block Insertion & Automatic Formula Range Shifting
 
-Docwright validates workbooks against 14 spreadsheet invariants:
-- **E1 (Template-Driven Tokens)**: 100% of formatting tokens are extracted from reference sheets.
-- **E3 (Dynamic KPI Formulas)**: Summary cells must use dynamic formulas (`=SUM`, `=COUNTIF`), never static hardcoded numbers.
-- **ERR_XLSX_004 (Merged Cell Safety)**: Values are assigned strictly to the top-left cell of a merge, and borders are synchronized across the entire merged range.
-- **ERR_XLSX_006 (DrawingML Preservation)**: Always preserve existing drawing parts when mutating workbook sheets.
+In real-world financial and operational spreadsheets, summary rows (`=SUM(C2:C3)`, `=AVERAGE(...)`, `=COUNTIF(...)`) sit below data tables, or multiple tables sit on the same worksheet.
+
+When you insert new rows using `xlsx.mutate_block`, Docwright's **AST Formula Shifter** parses every formula in the workbook and automatically expands or shifts coordinate ranges (`=SUM(C2:C3)` becomes `=SUM(C2:C5)`), while cloning the exact cell styles, number formats, and borders from adjacent template rows.
+
+![2D Block Insertion and Automatic Formula Shifting](/images/diagrams/xlsx-block-mutation.svg)
+
+> [!TIP]
+> **What Screenshot Can You Add Here Later?**
+> To add a real Excel screenshot, open any mutated workbook in Microsoft Excel, click on the **Total / Summary cell** so the formula bar highlights `=SUM(C2:C5)` over the newly inserted rows, and capture the worksheet + formula bar.
+
+---
+
+## 2. Token-Safe 3-Tier Spreadsheet Reading
+
+Instead of dumping tens of thousands of raw XML cells into an LLM prompt, use Docwright's 3-tier reading workflow:
+
+1. **Preflight & Topology (`xlsx.preflight`, `xlsx.detect_tables`)**: Quickly scan sheet names, dimensions, and detect independent 2D **Table Islands** on each sheet.
+2. **Faithful Extraction (`xlsx.extract`, `xlsx.semantic_extract`)**: Parse the workbook into a cached model in the local `FileStore` and return a lightweight structural summary.
+3. **Targeted Slice Query (`xlsx.query`)**: Fetch only the specific sheet, cell range (`A1:G25`), or table island needed for the task.
+
+```python
+from doctools.operations.xlsx import xlsx_detect_tables, xlsx_extract, xlsx_query
+
+# 1. Detect all distinct tables on a worksheet
+tables = xlsx_detect_tables(file_ref="data/operations_master.xlsx", sheet_name="Q3_KPIs")
+print("Detected table islands:", tables.result)
+
+# 2. Extract workbook into FileStore and query a specific slice
+ext = xlsx_extract(file_ref="data/operations_master.xlsx")
+slice_data = xlsx_query(
+    file_ref="data/operations_master.xlsx",
+    sheet_name="Q3_KPIs",
+    cell_range="A1:F20",
+)
+```
+
+---
+
+## 3. Recalculation & 13 Quality Validation Gates
+
+After mutating a workbook with `xlsx.mutate`, `xlsx.mutate_block`, or `xlsx.batch_interact`:
+- Run **`xlsx.recalc`** to evaluate live formula caches via headless LibreOffice.
+- Run **`xlsx.validate`** to verify the workbook against 13 automated quality checks (checking for formula `#REF!`/`#NAME?` errors, broken merged cell borders, uncalculated formula caches, and DrawingML preservation).

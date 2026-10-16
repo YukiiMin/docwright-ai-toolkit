@@ -1,53 +1,47 @@
 ---
 title: Docwright AI Toolkits
-description: The AI-Native Office & Diagram Toolkit Plugin for AI Agents.
+description: Deterministic Word (DOCX) and Excel (XLSX) Engineering Toolkit for AI Agents, Python Developers, and CLI Pipelines.
 template: splash
 hero:
-  tagline: Schema-guaranteed, format-preserving, and zero-corruption execution for Word, Excel, and Technical Diagrams.
+  tagline: Build, inspect, patch, and validate enterprise Word documents and Excel spreadsheets through 51 schema-validated tools — via MCP Server, Python SDK, or CLI.
   image:
-    file: ../../assets/architecture-5-layer.svg
+    file: ../../assets/logo.png
   actions:
-    - text: Get Started
+    - text: Quickstart Guide
       link: /getting-started/
       icon: right-arrow
-      variant: primary
-    - text: AI IDE Setup (1-Click)
-      link: /getting-started/ai-ide-setup/
-      icon: external
+    - text: Installation & Setup
+      link: /getting-started/installation/
+      icon: seti:shell
       variant: secondary
-    - text: View on GitHub
-      link: https://github.com/YukiiMin/docwright-ai-toolkit
-      icon: github
+    - text: Explore 51 Tools
+      link: /reference/
+      icon: external
+      variant: minimal
 ---
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-## Core Capabilities
+<div style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 10px; padding: 14px 20px; margin: 1.5rem 0 2rem 0; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.95rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+  <span><strong>Quick Install:</strong> <code>pip install docwright-ai-toolkit</code></span>
+  <span><strong>Live Docs:</strong> <a href="https://docwright-ai-toolkit.vercel.app/" target="_blank">docwright-ai-toolkit.vercel.app</a></span>
+</div>
+
+## Architecture & Execution Modes
+
+![Docwright Architecture Overview](/images/diagrams/architecture-overview.svg)
 
 <CardGrid stagger>
-  <Card title="Word / DOCX Engine" icon="document">
-    **OpenXML ECMA-376 Canonical Ordering**, `<w:cantSplit/>` table row protection, `<w:tblHeader/>` repeat headers, and surgical run splicer. Prevents Microsoft Word unreadable content repair prompts.
-  </Card>
-  <Card title="Spreadsheet / XLSX Engine" icon="pencil">
-    **2D Block Mutator with AST Formula Shifting**, Table Island Detection, DrawingML anchor preservation, and evaluation against **13 Universal Quality Gates (`UG-01..13`)**.
-  </Card>
-  <Card title="Technical Diagrams (Draw.io)" icon="seti:graphql">
-    Pure native `mxGraphModel` XML generation with orthogonal perimeter routing, dynamic geometry scaling, and high-DPI headless PNG/SVG rendering.
-  </Card>
-  <Card title="Universal AI Agent Integration" icon="laptop">
-    Native **Model Context Protocol (MCP)** STDIO server + Unified CLI Dispatcher. 1-Click integration for Cursor, Claude Code, Google Antigravity, Windsurf, and Codex CLI.
-  </Card>
+	<Card title="1. Direct MCP Server (AI IDEs)" icon="rocket">
+		Connect `docwright-mcp` directly to Claude Code, Cursor, Google Antigravity, Claude Desktop, or Windsurf so AI agents can call all 51 tools natively.
+	</Card>
+	<Card title="2. Python SDK (doctools.api)" icon="seti:python">
+		Import `doctools.api` and `doctools.operations` directly inside your Python applications for structured extraction, 2D block mutation, and document generation.
+	</Card>
+	<Card title="3. Unified CLI Dispatcher" icon="terminal">
+		Run `docwright list`, `docwright schema`, `docwright compact-json`, or execute any tool from shell scripts and CI/CD pipelines with strict POSIX exit codes.
+	</Card>
+	<Card title="51 Verified Domain Tools" icon="approve-check-circle">
+		Includes **19 Word (`docx.*`) tools**, **31 Excel (`xlsx.*`) tools**, and **1 Token Compaction (`common.*`) tool** backed by automated quality verification.
+	</Card>
 </CardGrid>
-
----
-
-## The Deterministic AI-Native Difference
-
-| Evaluation Metric | Ad-hoc Library Scripts (`python-docx` / `openpyxl`) | Generic MCP Document Servers | Docwright AI Toolkits |
-|---|---|---|---|
-| **ECMA-376 Schema Compliance** | ❌ None (Ad-hoc XML generation) | ⚠️ Partial (Raw library wrappers) | **100% Strict Canonical Ordering** |
-| **Multi-page Table Integrity** | ❌ Splits rows randomly across pages | ❌ Unmanaged | **Guaranteed (`cantSplit` & `tblHeader`)** |
-| **Excel Formula Shifts** | ❌ Hardcodes static numbers | ⚠️ Basic string substitution | **AST Tokenizer & 2D Block Shift** |
-| **Corporate Template Logos** | ❌ Stripped upon resaving | ⚠️ Preserved only if untouched | **DrawingML Anchor & Collision Shield** |
-| **Scanned PDF Layout Mesh** | ❌ Hallucinates coordinates | ❌ Fails on complex layouts | **OpenCV Morphological Mesh Resolution** |
-| **Diagnostic Verification** | ❌ Silent file corruption | ⚠️ Basic try/catch blocks | **13 Universal Quality Gates (Fail-Closed)** |

@@ -1,0 +1,93 @@
+---
+title: Common Utilities, CLI Commands & Python SDK
+description: Reference for common.compact_json, built-in CLI commands, and the public Python SDK (doctools.api).
+---
+
+## 1. Common Utility Tools (`common.*`)
+
+## `common.compact_json`
+
+Minify and compact JSON file or text for maximum AI token efficiency, with optional path querying and depth limiting.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `json_ref` | `string / object` | **Yes** | Path to .json file, FileRef dict/URI, or raw JSON text string. |
+| `json_path` | `string` | **Optional** | Optional dot/bracket path to isolate a sub-tree (e.g. 'sheets.0.cells' or '$.items'). |
+| `max_depth` | `integer` | **Optional** | Optional maximum object depth to prevent deep nesting bloat. |
+| `write_file` | `boolean` | **Optional** | If True, persists compacted JSON to FileStore and returns FileRef. Defaults to False (returns inline string). |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright common.compact_json --json '{"json_ref": "sample_json_ref.xlsx", "json_path": "sample_json_path.xlsx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.api import common_compact_json
+res = common_compact_json(**{
+  "json_ref": "sample_json_ref.xlsx",
+  "json_path": "sample_json_path.xlsx"
+})
+print(res.success, res.result)
+```
+
+
+---
+
+## 2. Built-in CLI Commands (`docwright`)
+
+In addition to executing any of the 51 tools, the `docwright` (or `doctools`) CLI provides 5 built-in utility subcommands:
+
+| Command | Description | Example |
+| :--- | :--- | :--- |
+| `docwright list` | Prints the JSON catalog of all 51 registered tools and their schemas. | `docwright list` |
+| `docwright schema <tool>` | Displays the exact input JSON schema and runnable example for a tool. | `docwright schema docx.build_document` |
+| `docwright mcp` | Starts the stdio Model Context Protocol (MCP) server (`docwright-mcp`). | `docwright mcp` |
+| `docwright compact-json <file>` | Minifies JSON files or extracts a sub-path to save AI context tokens. | `docwright compact-json data.json -p tables.0 -o out.json` |
+| `docwright profile-scaffold <xlsx>` | Generates a declarative YAML/JSON layout profile from an Excel workbook. | `docwright profile-scaffold report.xlsx --output profile.yaml` |
+
+### CLI Exit Codes
+
+- `0`: Clean execution (`success=True`, 0 errors, 0 warnings).
+- `1`: Completed with non-blocking warnings (`success=True`, warnings present).
+- `2`: Gate violation or execution error (`success=False` or errors present).
+- `64`: Invalid CLI arguments or malformed JSON payload (`EX_USAGE`).
+
+---
+
+## 3. Public Python SDK (`doctools.api`)
+
+When writing Python automation pipelines or backend services, import directly from `doctools.api`:
+
+```python
+from doctools.api import (
+    # L1 Faithful Spreadsheet Model
+    load_workbook_model,
+    WorkbookModel,
+    SheetModel,
+    CellModel,
+    # L2 High-Level Table & Key-Value Helpers
+    read_table,
+    get_key_values_by_labels,
+    resolve_sheet_name,
+    # L3 Layout Classification & Profile Scaffolding
+    LayoutClassifier,
+    ProfileScaffolder,
+    # 2D Table Island Detection & Block Mutation
+    TableIslandDetector,
+    BlockMutator,
+    BatchInteractionManager,
+    BulkIngestionEngine,
+    xlsx_detect_tables,
+    xlsx_mutate_block,
+    xlsx_semantic_extract,
+    # Streaming & Token Compaction
+    export_workbook_to_jsonl,
+    query_jsonl_stream,
+    compact_json,
+    compact_json_file,
+    common_compact_json,
+)
+```

@@ -1,0 +1,54 @@
+---
+title: Mô-đun Kỹ Thuật Bảng Tính Excel (xlsx.*)
+description: Hướng dẫn chi tiết 31 công cụ xlsx.* để trích xuất dữ liệu 3 tầng, nhận diện đảo bảng 2D, chèn khối tự động dịch công thức và kiểm định chất lượng.
+---
+
+**Mô-đun Excel (`xlsx.*` — 31 Công cụ)** giúp AI Agents và lập trình viên đọc hiểu các bảng tính nhiều sheet phức tạp mà không làm tràn bộ nhớ token, đồng thời chèn thêm dòng/cột dữ liệu mới mà vẫn tự động mở rộng công thức tính tổng, giữ nguyên đường viền ô gộp và bảo toàn logo trên trang bìa.
+
+---
+
+## 1. Chèn Khối Dữ Liệu 2D & Tự Động Dịch Chuyển Vùng Công Thức
+
+Trong các bảng báo cáo tài chính hay kế hoạch dự án, bên dưới bảng dữ liệu thường có dòng Tổng cộng (`=SUM(C2:C3)`, `=AVERAGE(...)`) hoặc có nhiều bảng nằm chung trên một sheet.
+
+Khi bạn chèn thêm dòng mới bằng `xlsx.mutate_block`, bộ phân tích cú pháp công thức (AST Formula Shifter) của Docwright sẽ tự động quét và cập nhật tọa độ trong toàn bộ công thức liên quan (`=SUM(C2:C3)` tự động chuyển thành `=SUM(C2:C5)`), đồng thời sao chép kiểu định dạng tiền tệ, phông chữ và khung viền từ dòng mẫu sang các dòng mới.
+
+![Minh họa chèn khối 2D và tự động dịch công thức Excel](/images/diagrams/xlsx-block-mutation.svg)
+
+> [!TIP]
+> **Gợi Ý Chụp Ảnh Thực Tế (Nếu Bạn Muốn Thay Hoặc Bổ Sung Ảnh Chụp Màn Hình):**
+> Mở file Excel sau khi chạy `xlsx.mutate_block`, nhấp chuột vào **ô Tổng cộng (`TOTAL`)** để thanh công thức (Formula Bar) hiện rõ vùng chọn `=SUM(C2:C5)` bao trùm cả các dòng mới vừa chèn, sau đó chụp lại màn hình vùng bảng và thanh công thức.
+
+---
+
+## 2. Quy Trình Đọc Bảng Tính 3 Tầng Tiết Kiệm Token
+
+Thay vì nạp toàn bộ hàng chục nghìn ô vào ngữ cảnh của AI, hãy sử dụng quy trình 3 bước:
+
+1. **Khảo Sát Nhanh & Nhận Diện Đảo Bảng (`xlsx.preflight`, `xlsx.detect_tables`)**: Xem danh sách sheet, kích thước vùng dữ liệu và tự động phát hiện tọa độ các bảng độc lập (**Table Islands**) nằm trên cùng một sheet.
+2. **Trích Xuất Mô Hình Trung Thực (`xlsx.extract`, `xlsx.semantic_extract`)**: Phân tích và lưu mô hình bảng tính vào bộ nhớ đệm cục bộ, trả về bản tóm tắt cấu trúc gọn nhẹ.
+3. **Truy Vấn Lát Cắt Mục Tiêu (`xlsx.query`)**: Chỉ lấy dữ liệu của vùng ô (`A1:G25`) hoặc bảng cần thiết.
+
+```python
+from doctools.operations.xlsx import xlsx_detect_tables, xlsx_extract, xlsx_query
+
+# 1. Phát hiện tất cả các bảng độc lập trên sheet
+tables = xlsx_detect_tables(file_ref="data/bao_cao_van_hanh.xlsx", sheet_name="KPI_Quy3")
+print("Các đảo bảng phát hiện được:", tables.result)
+
+# 2. Trích xuất và truy vấn đúng vùng dữ liệu cần đọc
+xlsx_extract(file_ref="data/bao_cao_van_hanh.xlsx")
+slice_data = xlsx_query(
+    file_ref="data/bao_cao_van_hanh.xlsx",
+    sheet_name="KPI_Quy3",
+    cell_range="A1:F20",
+)
+```
+
+---
+
+## 3. Tính Toán Lại Bộ Nhớ Đệm (`xlsx.recalc`) & Kiểm Định (`xlsx.validate`)
+
+Sau khi thêm dữ liệu bằng `xlsx.mutate`, `xlsx.mutate_block` hoặc `xlsx.batch_interact`:
+- Gọi **`xlsx.recalc`** để tính toán lại giá trị hiển thị của toàn bộ công thức thông qua LibreOffice chạy ngầm.
+- Gọi **`xlsx.validate`** để rà soát tự động 13 tiêu chí chất lượng (kiểm tra lỗi công thức `#REF!`/`#NAME?`, đồng bộ khung viền vùng gộp ô, kiểm tra logo/hình ảnh và phát hiện biến mẫu còn sót).

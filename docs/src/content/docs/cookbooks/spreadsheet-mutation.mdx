@@ -1,45 +1,49 @@
 ---
-title: "Cookbook: Safe Spreadsheet 2D Mutation"
-description: Inserting rows into existing financial workbooks without formula corruption.
+title: "Cookbook: Safe 2D Spreadsheet Block Mutation"
+description: Detect table islands on an Excel worksheet, insert new data rows, automatically shift formulas, recalculate, and validate.
 ---
 
-import { Steps } from '@astrojs/starlight/components';
+This cookbook demonstrates how to safely expand an existing table inside a multi-table Excel sheet without breaking downstream `=SUM(...)` formulas or overwriting adjacent tables.
 
-Spreadsheet mutations frequently corrupt financial models because inserting rows shifts cell references in downstream formulas like `=SUM(E5:E20)` or overwrites merged cell headers.
+![2D Block Mutation Workflow](/images/diagrams/xlsx-block-mutation.svg)
 
 ---
 
-## Workflow: 2D Block Mutation with AST Formula Shifting
+## End-to-End Python SDK Workflow
 
-<Steps>
-1. **Preflight Inspection**:
-   Run `xlsx.inspect` to identify existing table boundaries, merged ranges, and live calculation formulas.
+```python
+from doctools.operations.xlsx import (
+    xlsx_detect_tables,
+    xlsx_mutate_block,
+    xlsx_recalc,
+    xlsx_validate,
+)
 
-2. **Detect Table Islands**:
-   Run `xlsx.detect_tables` to determine safe whitespace clearance corridors.
+# Step 1: Detect all 2D Table Islands on the target sheet
+islands_res = xlsx_detect_tables(
+    file_ref="templates/financial_model.xlsx",
+    sheet_name="Operating_Expenses",
+)
+print("Detected tables:", islands_res.result)
 
-3. **Execute Block Mutation**:
-   Invoke `xlsx.mutate_block` specifying `top_left: "C12"` and `shift_direction: "down"`.
-   The AST formula shifter automatically updates all formula references below row 12.
+# Step 2: Insert 2 new rows into the table and shift all downstream formulas
+mut_res = xlsx_mutate_block(
+    file_ref="templates/financial_model.xlsx",
+    output_path="output/financial_model_q4.xlsx",
+    sheet_name="Operating_Expenses",
+    operation="insert_rows",
+    start_row=6,
+    count=2,
+    data=[
+        ["OPEX-09", "Cloud GPU Cluster", "Engineering", 14500],
+        ["OPEX-10", "Automated QA Pipeline", "Engineering", 3200],
+    ],
+)
 
-4. **Recalculate & Validate**:
-   Run `xlsx.recalc` to update formula calculation cache, followed by `xlsx.validate` to verify all 13 Universal Quality Gates.
-</Steps>
+# Step 3: Recalculate cached formula values via headless LibreOffice
+xlsx_recalc(file_ref="output/financial_model_q4.xlsx")
 
-### Sample Mutation Payload
-
-```json
-{
-  "file_path": "finance/quarterly_budget.xlsx",
-  "sheet_name": "Operating_Expenses",
-  "top_left": "B14",
-  "shift_direction": "down",
-  "data": [
-    ["Cloud Compute Infrastructure", 145000, "=C14*1.15"],
-    ["GPU Training Cluster", 320000, "=C15*1.20"]
-  ]
-}
+# Step 4: Validate against all 13 spreadsheet quality gates
+val_res = xlsx_validate(file_ref="output/financial_model_q4.xlsx")
+print("Validation passed:", val_res.success)
 ```
-
-![Spreadsheet Mutation with DrawingML Logo Intact](/images/placeholders/excel-sheet.jpg)
-*Figure 1: Financial sheet mutated safely with corporate logo and dependent formulas preserved.*

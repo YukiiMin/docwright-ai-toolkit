@@ -1,0 +1,29 @@
+---
+title: Chẩn Đoán Lỗi Cấu Trúc (Diagnostics)
+description: Cách đọc thông tin chẩn đoán lỗi và cảnh báo từ ResultEnvelope trong Python, MCP và CLI.
+---
+
+Mọi công cụ trong Docwright đều trả về đối tượng `ResultEnvelope` gồm `success` (`bool`), `result` (`dict`), và `diagnostics` (`errors`, `warnings`, `info`).
+
+## Đọc Kết Quả Chẩn Đoán Trong Python
+
+```python
+from doctools.operations.xlsx import xlsx_validate
+
+res = xlsx_validate(file_ref="output/bao_cao_tai_chinh.xlsx")
+print("Trạng thái thực thi:", res.success)
+
+for err in res.diagnostics.errors:
+    print(f"[LỖI {err.code}] {err.message} (Vị trí: {err.location})")
+
+for warn in res.diagnostics.warnings:
+    print(f"[CẢNH BÁO {warn.code}] {warn.message} (Vị trí: {warn.location})")
+```
+
+## Kiểm Tra Qua Mã Thoát CLI (Exit Codes)
+
+Khi chạy lệnh `docwright` trong CI/CD hoặc script tự động, mã thoát phản ánh chính xác kết quả kiểm định:
+- **Mã `0`**: Thực thi sạch hoàn toàn (`success=True`, 0 lỗi, 0 cảnh báo).
+- **Mã `1`**: Thành công nhưng có cảnh báo nhẹ (`warnings`).
+- **Mã `2`**: Phát hiện lỗi cấu trúc hoặc vi phạm tiêu chí chất lượng (`errors`).
+- **Mã `64`**: Lỗi cú pháp lệnh hoặc JSON đầu vào không hợp lệ.

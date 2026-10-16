@@ -1,0 +1,41 @@
+---
+title: Nhật Ký Phiên Bản (Changelog)
+description: Lịch sử cập nhật tính năng và cải tiến của Docwright AI Toolkits.
+---
+
+## v1.0.2 (16/10/2026)
+
+### Điểm Nổi Bật
+- **Nhận Diện Thương Hiệu & Logo Chính Thức**: Tích hợp biểu tượng chính thức của Docwright AI Toolkits làm avatar dự án, favicon và ảnh hero trên cổng tài liệu.
+- **Triển Khai Trang Tài Liệu Trực Tuyến Lên Vercel**: Chính thức phát hành cổng tài liệu tại [https://docwright-ai-toolkit.vercel.app/](https://docwright-ai-toolkit.vercel.app/) với tốc độ tải trang tức thì, hỗ trợ tìm kiếm tĩnh Pagefind và Dark/Light mode.
+- **Bổ Sung Nút Kêu Gọi Hành Động (CTA) & Lệnh Cài Đặt Nhanh**: Tích hợp lệnh cài đặt 1 chạm (`pip install docwright-ai-toolkit`) và nút chuyển nhanh đến trang Cài đặt môi trường ngay trên trang chủ.
+- **Cam Kết Phạm Vi Chuẩn Xác & Loại Bỏ So Sánh Hạ Thấp**: Xóa bỏ hoàn toàn các bảng so sánh chê bai công nghệ khác và các phân hệ chưa triển khai; tập trung 100% vào năng lực thực tế của 51 công cụ Word và Excel.
+
+---
+
+## v1.0.1 (16/10/2026)
+
+### Điểm Nổi Bật
+- **Tích Hợp Tài Liệu Rich Markdown Trên PyPI**: Nhúng toàn bộ hướng dẫn sử dụng và liên kết cấu hình GitHub tuyệt đối vào gói wheel phát hành trên PyPI (`twine check` đạt 100%).
+- **Ra Mắt Cổng Tài Liệu Song Ngữ Toàn Diện (51 Công Cụ)**: Xuất bản trang tài liệu Astro Starlight song ngữ Anh - Việt với bộ tìm kiếm offline Pagefind, sơ đồ trực quan SVG và bảng tham số chi tiết cho toàn bộ **19 công cụ `docx.*`**, **31 công cụ `xlsx.*`**, và **1 công cụ `common.*`**.
+- **Hướng Dẫn Đầy Đủ 3 Phương Thức Sử Dụng**: Bổ sung hướng dẫn chi tiết cách gọi qua **MCP Server (`docwright-mcp`)**, **import thư viện Python SDK (`doctools.api` & `doctools.operations`)**, và **chạy lệnh CLI (`docwright`)**.
+- **Chuẩn Hóa Bộ Icon & Cấu Hình 1-Click Cho AI IDE**: Hỗ trợ đầy đủ Claude Code, Cursor, Google Antigravity, Claude Desktop, Windsurf, OpenAI Codex CLI và Continue/Cline/Zed.
+
+---
+
+## v1.0.0 (15/10/2026)
+
+### Phiên Bản Đầu Tiên
+- **Kiến Trúc Động Cơ Nhị Phân Bảo Mật + Hợp Đồng Mở**: Biên dịch 111 mô-đun xử lý lõi thành mã máy C-Extensions (`.pyd`) tốc độ cao, đồng thời giữ mở 18 tệp hợp đồng Pydantic (`contract/`), `cli.py` và `mcp_server.py` để AI dễ dàng tra cứu schema.
+- **Mô-đun Word (`docx.*` — 19 Công Cụ)**:
+  - Khởi tạo tài liệu từ `DocSpec` tuân thủ chuẩn thứ tự thẻ ECMA-376.
+  - Tự động bảo vệ bảng nhiều trang (lặp tiêu đề bảng, chống cắt đôi hàng, chống rớt tiêu đề mục).
+  - Chuẩn hóa và điền biểu mẫu Jinja2 (`docx.normalize_template`, `docx.render_template`).
+  - Vá văn bản giữ nguyên định dạng (`docx.patch`).
+  - Tái tạo biểu mẫu Word 1:1 từ PDF scan (`docx.measure_pdf_layout`, `docx.populate_layout_text`, `docx.compile_layout_spec`).
+- **Mô-đun Excel (`xlsx.*` — 31 Công Cụ)**:
+  - Trích xuất và truy vấn bảng tính 3 tầng (`xlsx.extract`, `xlsx.query`, `xlsx.semantic_extract`).
+  - Nhận diện đảo bảng 2D (`xlsx.detect_tables`) và chèn khối tự động dịch vùng công thức (`xlsx.mutate_block`, `xlsx.shift_block`).
+  - Tính toán lại bộ nhớ đệm công thức qua LibreOffice (`xlsx.recalc`) và kiểm định 13 tiêu chí chất lượng (`xlsx.validate`).
+- **Tiện Ích Chung (`common.*` — 1 Công Cụ)**:
+  - `common.compact_json` giúp nén gọn JSON và tiết kiệm token cho AI.

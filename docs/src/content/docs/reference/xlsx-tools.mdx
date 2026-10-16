@@ -1,65 +1,928 @@
 ---
-title: Spreadsheet (XLSX) Tools Reference
-description: API reference for xlsx.* tools in Docwright.
+title: Spreadsheet Tools Reference (xlsx.* — 31 Tools)
+description: Complete API, CLI, and MCP reference for all 31 Excel spreadsheet engineering tools in Docwright.
 ---
 
-### 1. `xlsx.mutate_block`
-Inserts or overwrites a 2D rectangular data block into an existing worksheet with automatic AST formula shifting and DrawingML shape collision avoidance.
+This page documents all **31 registered `xlsx.*` tools** available in Docwright AI Toolkits. Every tool can be invoked via **MCP** (`xlsx.<tool>` or `xlsx_<tool>`), **CLI** (`docwright xlsx.<tool> --spec payload.json`), or **Python SDK** (`from doctools.operations.xlsx import xlsx_<tool>` or `from doctools.api import ...`).
 
-**Parameters**:
-- `file_path` (*string*, required): Path to the target workbook.
-- `sheet_name` (*string*, required): Worksheet name.
-- `top_left` (*string*, required): Cell coordinate for insertion (e.g., `"B6"`).
-- `data` (*array of arrays*, required): 2D array of values or formulas (`[["Item", 100], ["Total", "=SUM(B6:B7)"]]`).
-- `shift_direction` (*string*, optional, default: `"down"`): `"down"`, `"right"`, or `"none"` (overwrite).
+## `xlsx.preflight`
 
----
+Comprehensive Excel package inspection, structural inventory, and Fidelity Tier (T1..T4) determination.
 
-### 2. `xlsx.detect_tables`
-Detects independent table boundaries, whitespace corridors, and border matrices on a worksheet.
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Yes** | Path or FileRef URI to Excel workbook (.xlsx/.xls) |
 
-**Parameters**:
-- `file_path` (*string*, required): Path to the workbook.
-- `sheet_name` (*string*, required): Worksheet name.
+**Usage Examples (MCP / CLI / Python SDK):**
 
-**Returns**:
-List of detected table regions (`{"range": "A1:F20", "headers": ["ID", "Name", ...], "corridor_bottom": 21}`).
+```bash
+# 1. CLI Execution
+docwright xlsx.preflight --json '{"file_ref": "sample_file_ref.xlsx"}'
+```
 
----
-
-### 3. `xlsx.recalc`
-Recalculates formula values in the workbook and injects cached results into OpenXML `<v>` tags.
-
-**Parameters**:
-- `file_path` (*string*, required): Path to the workbook.
-- `timeout_seconds` (*integer*, optional, default: 30): Maximum execution time.
+```python
+# 2. Python SDK Import
+from doctools.operations.xlsx import xlsx_preflight
+res = xlsx_preflight(**{
+  "file_ref": "sample_file_ref.xlsx"
+})
+print(res.success, res.result)
+```
 
 ---
 
-### 4. `xlsx.validate`
-Audits workbooks against **13 Universal Quality Gates (`UG-01..13`)** and returns structured diagnostic envelopes.
+## `xlsx.inspect`
 
-**Parameters**:
-- `file_path` (*string*, required): Path to the target workbook.
+Detailed 4-level workbook inspection (summary, structure, objects, cells).
 
-**Returns**:
-`Diagnostics` envelope containing `errors`, `warnings`, and `info` issues with exact cell locations.
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Yes** | File Ref |
+| `level` | `string` | **Optional** | summary \| structure \| objects \| cells |
+| `sheet` | `string` | **Optional** | Target worksheet name |
+| `anchor` | `string` | **Optional** | Target anchor or range |
+| `page` | `integer` | **Optional** | Pagination page number |
+| `max_items` | `integer` | **Optional** | Maximum items per page |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright xlsx.inspect --json '{"file_ref": "sample_file_ref.xlsx", "level": "sample_level.xlsx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.xlsx import xlsx_inspect
+res = xlsx_inspect(**{
+  "file_ref": "sample_file_ref.xlsx",
+  "level": "sample_level.xlsx"
+})
+print(res.success, res.result)
+```
 
 ---
 
-### 5. `xlsx.extract`
-Lossless extraction of spreadsheet structure, styles, and formulas stored in opaque reference files to prevent LLM context window overflow.
+## `xlsx.coverage_report`
 
-**Parameters**:
-- `file_path` (*string*, required): Path to workbook.
-- `sheets` (*array of strings*, optional): Specific sheet names to extract.
+Report workbook feature coverage and capabilities matrix.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Optional** | File Ref |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright xlsx.coverage_report --json '{"file_ref": "sample_file_ref.xlsx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.xlsx import xlsx_coverage_report
+res = xlsx_coverage_report(**{
+  "file_ref": "sample_file_ref.xlsx"
+})
+print(res.success, res.result)
+```
 
 ---
 
-### 6. `xlsx.query`
-Executes targeted, paginated cell slice queries on an extracted spreadsheet model.
+## `xlsx.analyze_formulas`
 
-**Parameters**:
-- `extract_ref` (*string*, required): Opaque extraction ID returned from `xlsx.extract`.
-- `sheet_name` (*string*, required): Sheet to query.
-- `cell_range` (*string*, optional): Bounding box slice (e.g., `"A1:E50"`).
+Analyze R1C1 formulas, dependencies, and formula risks.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Yes** | File Ref |
+| `sheet` | `string` | **Optional** | Sheet |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright xlsx.analyze_formulas --json '{"file_ref": "sample_file_ref.xlsx", "sheet": "sample_sheet.xlsx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.xlsx import xlsx_analyze_formulas
+res = xlsx_analyze_formulas(**{
+  "file_ref": "sample_file_ref.xlsx",
+  "sheet": "sample_sheet.xlsx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `xlsx.describe_formats`
+
+Describe cell formatting layers: number formats, fonts, borders, and fills.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Yes** | File Ref |
+| `sheet` | `string` | **Optional** | Sheet |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright xlsx.describe_formats --json '{"file_ref": "sample_file_ref.xlsx", "sheet": "sample_sheet.xlsx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.xlsx import xlsx_describe_formats
+res = xlsx_describe_formats(**{
+  "file_ref": "sample_file_ref.xlsx",
+  "sheet": "sample_sheet.xlsx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `xlsx.function_catalog`
+
+Query Function Registry and formula compatibility matrix.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `query` | `string` | **Optional** | Function name search query |
+| `category` | `string` | **Optional** | Function category |
+| `file_ref` | `string / object` | **Optional** | Target file to audit |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright xlsx.function_catalog --json '{"query": "sample_query.xlsx", "category": "sample_category.xlsx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.xlsx import xlsx_function_catalog
+res = xlsx_function_catalog(**{
+  "query": "sample_query.xlsx",
+  "category": "sample_category.xlsx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `xlsx.mutate`
+
+Mutate Excel workbook: clone prototype rows, update cells, and adjust formula ranges.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `spec` | `object` | **Yes** | Spec |
+| `template_path` | `string` | **Optional** | Template Path |
+| `output_path` | `string` | **Optional** | Output Path |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright xlsx.mutate --json '{"spec": "sample_spec.xlsx", "template_path": "sample_template_path.xlsx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.xlsx import xlsx_mutate
+res = xlsx_mutate(**{
+  "spec": "sample_spec.xlsx",
+  "template_path": "sample_template_path.xlsx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `xlsx.recalc`
+
+Recalculate Excel formulas via Excel COM, LibreOffice, or XML value cache injection.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Yes** | File Ref |
+| `method` | `string` | **Optional** | Method |
+| `cached_values` | `object` | **Optional** | Cached Values |
+| `output_path` | `string` | **Optional** | Output Path |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright xlsx.recalc --json '{"file_ref": "sample_file_ref.xlsx", "method": "sample_method.xlsx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.xlsx import xlsx_recalc
+res = xlsx_recalc(**{
+  "file_ref": "sample_file_ref.xlsx",
+  "method": "sample_method.xlsx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `xlsx.validate`
+
+Validate Excel workbook quality against Universal Gates (UG-01..16).
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Yes** | File Ref |
+| `template_inventory` | `object` | **Optional** | Template Inventory |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright xlsx.validate --json '{"file_ref": "sample_file_ref.xlsx", "template_inventory": "sample_template_inventory.xlsx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.xlsx import xlsx_validate
+res = xlsx_validate(**{
+  "file_ref": "sample_file_ref.xlsx",
+  "template_inventory": "sample_template_inventory.xlsx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `xlsx.diff`
+
+Compare structural differences and regression issues between two Excel workbooks.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `original_ref` | `string / object` | **Yes** | Original Ref |
+| `modified_ref` | `string / object` | **Yes** | Modified Ref |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright xlsx.diff --json '{"original_ref": "sample_original_ref.xlsx", "modified_ref": "sample_modified_ref.xlsx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.xlsx import xlsx_diff
+res = xlsx_diff(**{
+  "original_ref": "sample_original_ref.xlsx",
+  "modified_ref": "sample_modified_ref.xlsx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `xlsx.export_legacy_xls`
+
+Export modern Excel file (.xlsx) to legacy .xls (Excel 97-2003) format via Excel COM or LibreOffice.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Yes** | File Ref |
+| `output_path` | `string` | **Optional** | Output Path |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright xlsx.export_legacy_xls --json '{"file_ref": "sample_file_ref.xlsx", "output_path": "sample_output_path.xlsx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.xlsx import xlsx_export_legacy_xls
+res = xlsx_export_legacy_xls(**{
+  "file_ref": "sample_file_ref.xlsx",
+  "output_path": "sample_output_path.xlsx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `xlsx.build`
+
+Build a new Excel workbook from JSON XlsxSpec with design tokens and native DrawingML charts.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `spec` | `object` | **Yes** | Spec |
+| `output_path` | `string` | **Optional** | Output Path |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright xlsx.build --json '{"spec": "sample_spec.xlsx", "output_path": "sample_output_path.xlsx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.xlsx import xlsx_build
+res = xlsx_build(**{
+  "spec": "sample_spec.xlsx",
+  "output_path": "sample_output_path.xlsx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `xlsx.repair`
+
+Repair OpenXML package structural issues, restore calcPr tags, and sanitize invalid XML characters.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Yes** | File Ref |
+| `output_path` | `string` | **Optional** | Output Path |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright xlsx.repair --json '{"file_ref": "sample_file_ref.xlsx", "output_path": "sample_output_path.xlsx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.xlsx import xlsx_repair
+res = xlsx_repair(**{
+  "file_ref": "sample_file_ref.xlsx",
+  "output_path": "sample_output_path.xlsx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `xlsx.register_template`
+
+Register an Excel template (.xlsx) with manifest into the versioned repository.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `template_ref` | `string / object` | **Yes** | Template Ref |
+| `manifest` | `object / string` | **Yes** | Manifest |
+| `force_version` | `integer` | **Optional** | Force Version |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright xlsx.register_template --json '{"template_ref": "sample_template_ref.xlsx", "manifest": "sample_manifest.xlsx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.xlsx import xlsx_register_template
+res = xlsx_register_template(**{
+  "template_ref": "sample_template_ref.xlsx",
+  "manifest": "sample_manifest.xlsx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `xlsx.lint_template`
+
+Lint an Excel template for static quality issues and manifest consistency.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `template_ref` | `string / object` | **Yes** | Template Ref |
+| `manifest` | `string / object` | **Optional** | Manifest |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright xlsx.lint_template --json '{"template_ref": "sample_template_ref.xlsx", "manifest": "sample_manifest.xlsx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.xlsx import xlsx_lint_template
+res = xlsx_lint_template(**{
+  "template_ref": "sample_template_ref.xlsx",
+  "manifest": "sample_manifest.xlsx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `xlsx.list_templates`
+
+List all registered Excel templates and their versions.
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright xlsx.list_templates --json '{}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.xlsx import xlsx_list_templates
+res = xlsx_list_templates(**{})
+print(res.success, res.result)
+```
+
+---
+
+## `xlsx.set_format`
+
+Apply cell formatting (number formats, fonts, borders, fills).
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `file_path` | `string` | **Yes** | File Path |
+| `sheet` | `string` | **Yes** | Sheet |
+| `cell_range` | `string` | **Yes** | Cell Range |
+| `number_format` | `string` | **Optional** | Number Format |
+| `bold` | `boolean` | **Optional** | Bold |
+| `font_size` | `integer` | **Optional** | Font Size |
+| `font_color` | `string` | **Optional** | Font Color |
+| `fill_color` | `string` | **Optional** | Fill Color |
+| `border_style` | `string` | **Optional** | Border Style |
+| `border_color` | `string` | **Optional** | Border Color |
+| `alignment` | `string` | **Optional** | Alignment |
+| `wrap_text` | `boolean` | **Optional** | Wrap Text |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright xlsx.set_format --json '{"file_path": "sample_file_path.xlsx", "sheet": "sample_sheet.xlsx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.xlsx import xlsx_set_format
+res = xlsx_set_format(**{
+  "file_path": "sample_file_path.xlsx",
+  "sheet": "sample_sheet.xlsx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `xlsx.set_validation`
+
+Apply data validation to a specified cell range.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `file_path` | `string` | **Yes** | File Path |
+| `sheet` | `string` | **Yes** | Sheet |
+| `cell_range` | `string` | **Yes** | Cell Range |
+| `type` | `string` | **Optional** | Validation type: list, whole, decimal, date |
+| `formula1` | `string` | **Yes** | Validation formula or list (e.g. '"O,X,N/A"') |
+| `formula2` | `string` | **Optional** | Formula2 |
+| `allow_blank` | `boolean` | **Optional** | Allow Blank |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright xlsx.set_validation --json '{"file_path": "sample_file_path.xlsx", "sheet": "sample_sheet.xlsx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.xlsx import xlsx_set_validation
+res = xlsx_set_validation(**{
+  "file_path": "sample_file_path.xlsx",
+  "sheet": "sample_sheet.xlsx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `xlsx.set_conditional_format`
+
+Apply conditional formatting rules to a cell range.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `file_path` | `string` | **Yes** | File Path |
+| `sheet` | `string` | **Yes** | Sheet |
+| `cell_range` | `string` | **Yes** | Cell Range |
+| `operator` | `string` | **Optional** | Operator |
+| `formula` | `array` | **Optional** | Formula |
+| `fill_color` | `string` | **Optional** | Fill Color |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright xlsx.set_conditional_format --json '{"file_path": "sample_file_path.xlsx", "sheet": "sample_sheet.xlsx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.xlsx import xlsx_set_conditional_format
+res = xlsx_set_conditional_format(**{
+  "file_path": "sample_file_path.xlsx",
+  "sheet": "sample_sheet.xlsx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `xlsx.copy_sheet`
+
+Clone worksheet preserving 100% drawings, shapes, and data validation rules.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `file_path` | `string` | **Yes** | File Path |
+| `source_sheet` | `string` | **Yes** | Source Sheet |
+| `target_title` | `string` | **Yes** | Target Title |
+| `rewire_self_refs` | `boolean` | **Optional** | Rewire Self Refs |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright xlsx.copy_sheet --json '{"file_path": "sample_file_path.xlsx", "source_sheet": "sample_source_sheet.xlsx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.xlsx import xlsx_copy_sheet
+res = xlsx_copy_sheet(**{
+  "file_path": "sample_file_path.xlsx",
+  "source_sheet": "sample_source_sheet.xlsx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `xlsx.extract`
+
+Extract full WorkbookModel JSON or JSONL lines into FileStore, returning a lightweight summary.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Yes** | FileRef or local path to target .xlsx workbook |
+| `profile` | `string` | **Optional** | Registered template profile name (e.g. 'unit_test_matrix') |
+| `include_styles` | `boolean` | **Optional** | Whether to extract full workbook style palette |
+| `audit_anomalies` | `boolean` | **Optional** | Automatically audit and package data anomalies into output |
+| `fidelity` | `string` | **Optional** | Reader fidelity tier: 'FULL_DOM', 'FAST_TABULAR', 'METADATA_ONLY' |
+| `format` | `string` | **Optional** | Output serialization format: 'json' (canonical) or 'jsonl' (streaming lines + manifest) |
+| `compact` | `boolean` | **Optional** | Output compact token-efficient JSON (no whitespace bloat). Defaults to True. |
+| `use_cache` | `boolean` | **Optional** | Enable local ModelCache for instant subsequent retrievals |
+| `enrich` | `boolean` | **Optional** | Enable advisory qualitative boolean/data enrichment (opt-in) |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright xlsx.extract --json '{"file_ref": "sample_file_ref.xlsx", "profile": "sample_profile.xlsx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.xlsx import xlsx_extract
+res = xlsx_extract(**{
+  "file_ref": "sample_file_ref.xlsx",
+  "profile": "sample_profile.xlsx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `xlsx.query`
+
+Query targeted data slices (sheet, bounding range, header row, labels) with offset and limit pagination.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `model_ref` | `string / object` | **Yes** | Model JSON/JSONL FileRef or path to .xlsx workbook |
+| `sheet_name` | `string` | **Optional** | Target worksheet name to slice |
+| `range` | `string` | **Optional** | Cell coordinate bounding box (e.g. 'A1:D10') |
+| `table_header_row` | `integer` | **Optional** | Row index containing table headers |
+| `columns` | `array` | **Optional** | List of column names to filter |
+| `labels` | `array` | **Optional** | Metadata label keys to scan and retrieve |
+| `offset` | `integer` | **Optional** | Pagination offset (0-indexed start record) |
+| `limit` | `integer` | **Optional** | Pagination limit (max records to return) |
+| `use_cache` | `boolean` | **Optional** | Enable local ModelCache when loading raw .xlsx files |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright xlsx.query --json '{"model_ref": "sample_model_ref.xlsx", "sheet_name": "sample_sheet_name.xlsx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.xlsx import xlsx_query
+res = xlsx_query(**{
+  "model_ref": "sample_model_ref.xlsx",
+  "sheet_name": "sample_sheet_name.xlsx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `xlsx.verify_extract`
+
+Verify 4-layer parity or O(N) column hash fidelity between Excel workbook and extracted JSON/JSONL data.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Yes** | FileRef or path to source .xlsx file |
+| `json_ref` | `string / object` | **Yes** | FileRef, path to extracted .json/.jsonl file, or raw data dict |
+| `profile` | `string` | **Optional** | Profile template name (e.g., 'unit_test_matrix') |
+| `method` | `string` | **Optional** | Verification method: 'auto', 'column_hash', or 'stratified' |
+| `seed` | `integer` | **Optional** | Random seed for deterministic reservoir sampling |
+| `sample_size` | `integer` | **Optional** | Sample count retained for discrepancy diagnosis |
+| `sheet_name` | `string` | **Optional** | Target sheet name for tabular column hashing |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright xlsx.verify_extract --json '{"file_ref": "sample_file_ref.xlsx", "json_ref": "sample_json_ref.xlsx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.xlsx import xlsx_verify_extract
+res = xlsx_verify_extract(**{
+  "file_ref": "sample_file_ref.xlsx",
+  "json_ref": "sample_json_ref.xlsx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `xlsx.classify_layout`
+
+Inspect workbook layout topology and recommend extraction archetype with evidence.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Yes** | FileRef or path to Excel workbook |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright xlsx.classify_layout --json '{"file_ref": "sample_file_ref.xlsx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.xlsx import xlsx_classify_layout
+res = xlsx_classify_layout(**{
+  "file_ref": "sample_file_ref.xlsx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `xlsx.profile_scaffold`
+
+Scaffold declarative YAML or JSON profile specification for an Excel spreadsheet.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Yes** | FileRef or path to Excel workbook |
+| `profile_name` | `string` | **Optional** | Name of the generated profile |
+| `format` | `string` | **Optional** | Specification output format: 'yaml' or 'json' |
+| `output_path` | `string` | **Optional** | Optional target file path to save specification |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright xlsx.profile_scaffold --json '{"file_ref": "sample_file_ref.xlsx", "profile_name": "sample_profile_name.xlsx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.xlsx import xlsx_profile_scaffold
+res = xlsx_profile_scaffold(**{
+  "file_ref": "sample_file_ref.xlsx",
+  "profile_name": "sample_profile_name.xlsx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `xlsx.semantic_extract`
+
+Enterprise semantic extraction, DrawingML image extraction, and cross-sheet topology mapping.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Yes** | Path or FileRef URI to Excel workbook |
+| `output_dir` | `string` | **Optional** | Directory to dump semantic records, markdown, and images |
+| `target_sheets` | `array` | **Optional** | Optional list of sheet names to extract |
+| `exclude_sheets` | `array` | **Optional** | Optional list of sheet names to skip |
+| `probe_urls` | `boolean` | **Optional** | Whether to check external hyperlinks for dead links |
+| `verify_parity` | `boolean` | **Optional** | Whether to execute verification parity checks on extracted tables |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright xlsx.semantic_extract --json '{"file_ref": "sample_file_ref.xlsx", "output_dir": "sample_output_dir.xlsx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.xlsx import xlsx_semantic_extract
+res = xlsx_semantic_extract(**{
+  "file_ref": "sample_file_ref.xlsx",
+  "output_dir": "sample_output_dir.xlsx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `xlsx.detect_tables`
+
+Tự động nhận diện các đảo bảng độc lập (Table Islands) và Bounding Boxes trên worksheet.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Yes** | Path or FileRef URI to Excel workbook |
+| `sheet` | `string` | **Optional** | Target sheet name (default: all sheets) |
+| `explicit_ranges` | `array` | **Optional** | Optional list of explicit cell ranges (e.g. ['A1:D10']) to evaluate |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright xlsx.detect_tables --json '{"file_ref": "sample_file_ref.xlsx", "sheet": "sample_sheet.xlsx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.xlsx import xlsx_detect_tables
+res = xlsx_detect_tables(**{
+  "file_ref": "sample_file_ref.xlsx",
+  "sheet": "sample_sheet.xlsx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `xlsx.mutate_block`
+
+Dời khối ô 2D cục bộ trong Bounding Box, bảo vệ 100% các bảng song song bên cạnh.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Yes** | Path or FileRef URI to Excel workbook |
+| `sheet` | `string` | **Yes** | Target sheet name containing the block |
+| `target_range` | `string` | **Yes** | Bounding box coordinate of block to shift (e.g. 'B5:H20') |
+| `delta_rows` | `integer` | **Yes** | Vertical shift amount (positive = downwards, negative = upwards) |
+| `clear_source` | `boolean` | **Optional** | Whether to clear original cell contents and formatting from vacated range |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright xlsx.mutate_block --json '{"file_ref": "sample_file_ref.xlsx", "sheet": "sample_sheet.xlsx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.xlsx import xlsx_mutate_block
+res = xlsx_mutate_block(**{
+  "file_ref": "sample_file_ref.xlsx",
+  "sheet": "sample_sheet.xlsx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `xlsx.shift_block`
+
+Alias của xlsx.mutate_block: dời khối ô 2D cục bộ bảo vệ các bảng song song.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Yes** | Path or FileRef URI to Excel workbook |
+| `sheet` | `string` | **Yes** | Target sheet name containing the block |
+| `target_range` | `string` | **Yes** | Bounding box coordinate of block to shift (e.g. 'B5:H20') |
+| `delta_rows` | `integer` | **Yes** | Vertical shift amount (positive = downwards, negative = upwards) |
+| `clear_source` | `boolean` | **Optional** | Whether to clear original cell contents and formatting from vacated range |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright xlsx.shift_block --json '{"file_ref": "sample_file_ref.xlsx", "sheet": "sample_sheet.xlsx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.xlsx import xlsx_shift_block
+res = xlsx_shift_block(**{
+  "file_ref": "sample_file_ref.xlsx",
+  "sheet": "sample_sheet.xlsx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `xlsx.batch_interact`
+
+Cập nhật hàng loạt Data Validation, Conditional Formatting, Sheet Protection theo giao dịch nguyên tử All-or-Nothing.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Yes** | Path or FileRef URI to Excel workbook |
+| `validations` | `array` | **Optional** | List of data validation rules to apply |
+| `conditional_formats` | `array` | **Optional** | List of conditional formatting rules to apply |
+| `protections` | `array` | **Optional** | List of sheet protection settings to apply |
+| `spec` | `object` | **Optional** | Batch specification combining validations, conditional formats, and protections |
+| `run_validation_gate` | `boolean` | **Optional** | Whether to run 13 Universal Gates (UG-01..13) after batch updates |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright xlsx.batch_interact --json '{"file_ref": "sample_file_ref.xlsx", "validations": "sample_validations.xlsx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.xlsx import xlsx_batch_interact
+res = xlsx_batch_interact(**{
+  "file_ref": "sample_file_ref.xlsx",
+  "validations": "sample_validations.xlsx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `xlsx.bulk_ingest`
+
+Nạp dữ liệu lớn từ file CSV/JSONL vào bảng tính Excel theo Size Policy và bảo vệ RAM.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Yes** | Path or FileRef URI to destination Excel workbook |
+| `sheet` | `string` | **Yes** | Target sheet name to receive data |
+| `data_file_ref` | `string / object` | **Yes** | Path or FileRef URI to source data file (CSV, JSONL, or TSV) |
+| `start_cell` | `string` | **Optional** | Top-left starting cell for data insertion (e.g. 'A2') |
+| `mode` | `string` | **Optional** | Ingestion mode: 'append' or 'overwrite' |
+| `skip_header` | `boolean` | **Optional** | Whether to skip first row/header of the data file |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright xlsx.bulk_ingest --json '{"file_ref": "sample_file_ref.xlsx", "sheet": "sample_sheet.xlsx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.xlsx import xlsx_bulk_ingest
+res = xlsx_bulk_ingest(**{
+  "file_ref": "sample_file_ref.xlsx",
+  "sheet": "sample_sheet.xlsx"
+})
+print(res.success, res.result)
+```

@@ -1,52 +1,38 @@
 ---
-title: Introduction
-description: Overview of Docwright AI Toolkits and core mission.
+title: Quickstart Guide
+description: Install Docwright AI Toolkits and run your first Word or Excel operation in under 60 seconds.
 ---
 
-import { Tabs, TabItem } from '@astrojs/starlight/components';
+**Docwright AI Toolkits** (`docwright-ai-toolkit`) is a specialized engineering toolkit for creating, inspecting, modifying, and validating **Word (`.docx`)** and **Excel (`.xlsx`)** files with deterministic layout and formula preservation.
 
-**Docwright AI Toolkits** (`docwright-ai-toolkit`) is the AI-Native Office & Diagram Toolkit Plugin engineered specifically for modern AI Agents and developers.
+## What Problems Does Docwright Solve?
 
-It bridges the gap between Large Language Models (LLMs) and complex, binary enterprise office formats:
-- **Microsoft Word (`.docx`)**
-- **Microsoft Excel (`.xlsx`, `.xls`)**
-- **Technical Diagrams (`.drawio`, `mxGraphModel`)**
-
----
-
-## Why Standard AI Automation Breaks Office Documents
-
-When modern LLMs (Claude, GPT-4, Gemini) generate or edit documents using direct library scripts (such as `python-docx` or `openpyxl`), they frequently create corrupt, unreadable, or cosmetically broken files:
-
-1. **Word Schema Violations (`ERR_DOCX_001`)**: Omitting a paragraph `<w:p>` in an empty table cell violates ECMA-376 schema constraints, causing Word to display its dreaded repair dialog: *"Word found unreadable content"*.
-2. **Table Splitting Across Pages (`ERR_DOCX_003`)**: AI scripts generate tables without `<w:cantSplit/>` and header repeat flags `<w:tblHeader/>`, causing table rows to split awkwardly across page breaks.
-3. **Formula & Calculation Breakage (`ERR_XLSX_003`)**: Directly overwriting cells destroys cell dependency graphs, overwrites live calculation formulas (`=SUM`, `=COUNTIF`), and strips embedded DrawingML shapes.
-4. **DrawingML Logo Stripping (`ERR_XLSX_006`)**: Resaving template sheets with basic openpyxl scripts strips corporate cover logos and embedded drawing vectors.
-
-Docwright solves these problems by providing a **deterministic compilation layer** enforcing 100% ECMA-376 OpenXML compliance, dynamic geometry calculation, and AST formula shifting.
+1. **Multi-Page Word Table Integrity**: Automatically keeps rows from splitting across page boundaries, repeats table header rows on every new page, and locks section banners with their data.
+2. **Style-Preserving Document Patching & Templates**: Heals fragmented Jinja2 tags (`{{ variable }}`) across XML runs and splices updated text into existing documents while preserving original fonts, colors, and corporate styles.
+3. **1:1 Scanned PDF to Word Reconstruction**: Measures table grids from scanned PDFs using computer vision (`docx.measure_pdf_layout`), populates OCR text by cell ID, and compiles editable `.docx` forms.
+4. **Token-Safe Spreadsheet Reading & 2D Block Mutation**: Extracts large workbooks into queryable structures without overflowing AI context windows, detects multiple tables on a single sheet, and inserts rows while automatically shifting downstream `=SUM(...)` and KPI formulas.
 
 ---
 
-## Quick Comparison
+## Step 1: Install from PyPI
 
-```mermaid
-graph LR
-    subgraph AdHoc ["Traditional AI Approach (Corrupts Files)"]
-        A1["AI Agent"] -->|Writes ad-hoc script| B1["python-docx / openpyxl"]
-        B1 -->|Generates invalid XML| C1["Corrupt .docx / .xlsx"]
-    end
-
-    subgraph Docwright ["Docwright AI Toolkits Approach (Deterministic)"]
-        A2["AI Agent"] -->|Calls MCP / CLI| B2["Docwright Engine"]
-        B2 -->|Guaranteed ECMA-376| C2["Clean, Valid Office Files"]
-    end
+```bash
+pip install docwright-ai-toolkit
 ```
 
----
+## Step 2: Verify the 51-Tool Catalog
 
-## Next Steps
+```bash
+# List all 51 registered tools (19 docx.*, 31 xlsx.*, 1 common.*)
+docwright list
 
-- [Why Standard AI Fails at Office Docs](/getting-started/why-ai-fails/)
-- [Installation Guide](/getting-started/installation/)
-- [1-Click AI IDE Integration (Cursor, Claude, Antigravity)](/getting-started/ai-ide-setup/)
-- [Explore the 51 Tools Reference](/reference/)
+# Inspect the input schema and runnable example for any tool
+docwright schema docx.build_document
+docwright schema xlsx.mutate_block
+```
+
+## Step 3: Choose Your Workflow
+
+- **[1-Click AI IDE Setup](/getting-started/ai-ide-setup/)**: Add `docwright-mcp` to Cursor, Claude Code, Antigravity, or Windsurf.
+- **[3 Usage Modes (MCP, Python SDK, CLI)](/getting-started/usage-modes/)**: Learn how to call tools via MCP, import `doctools.api` in Python, or run CLI commands.
+- **[51-Tool Reference](/reference/)**: Browse every parameter and payload schema.

@@ -1,0 +1,49 @@
+---
+title: "Kịch Bản Mẫu: Chèn Khối Bảng Tính & Tự Động Dịch Công Thức"
+description: Nhận diện đảo bảng trên Excel, chèn thêm dòng dữ liệu mới, tự động mở rộng công thức SUM và kiểm định chất lượng.
+---
+
+Kịch bản này minh họa cách mở rộng một bảng dữ liệu trong file Excel bằng `xlsx.mutate_block` mà không làm hỏng công thức tính tổng phía dưới.
+
+![Minh họa chèn khối 2D và tự động dịch công thức](/images/diagrams/xlsx-block-mutation.svg)
+
+---
+
+## Ví Dụ Hoàn Chỉnh Bằng Python SDK
+
+```python
+from doctools.operations.xlsx import (
+    xlsx_detect_tables,
+    xlsx_mutate_block,
+    xlsx_recalc,
+    xlsx_validate,
+)
+
+# Bước 1: Phát hiện tọa độ các bảng trên sheet
+islands_res = xlsx_detect_tables(
+    file_ref="templates/mo_hinh_tai_chinh.xlsx",
+    sheet_name="Chi_Phi_Van_Hanh",
+)
+print("Các bảng trên sheet:", islands_res.result)
+
+# Bước 2: Chèn 2 dòng mới vào bảng và tự động dịch chuyển toàn bộ công thức phía dưới
+mut_res = xlsx_mutate_block(
+    file_ref="templates/mo_hinh_tai_chinh.xlsx",
+    output_path="output/mo_hinh_tai_chinh_q4.xlsx",
+    sheet_name="Chi_Phi_Van_Hanh",
+    operation="insert_rows",
+    start_row=6,
+    count=2,
+    data=[
+        ["OPEX-09", "Cụm máy chủ GPU AI", "Khối Kỹ thuật", 14500],
+        ["OPEX-10", "Hệ thống kiểm thử tự động", "Khối Kỹ thuật", 3200],
+    ],
+)
+
+# Bước 3: Tính toán lại giá trị công thức qua LibreOffice
+xlsx_recalc(file_ref="output/mo_hinh_tai_chinh_q4.xlsx")
+
+# Bước 4: Kiểm định chất lượng bảng tính
+val_res = xlsx_validate(file_ref="output/mo_hinh_tai_chinh_q4.xlsx")
+print("Kiểm định đạt chuẩn:", val_res.success)
+```

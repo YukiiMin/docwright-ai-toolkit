@@ -1,95 +1,550 @@
 ---
-title: Word (DOCX) Tools Reference
-description: API reference for docx.* tools in Docwright.
+title: Word Tools Reference (docx.* — 19 Tools)
+description: Complete API, CLI, and MCP reference for all 19 Word document engineering tools in Docwright.
 ---
 
-### 1. `docx.build_document`
-Deterministically compiles a typed `DocSpec` JSON structure into an ECMA-376 compliant Word document.
+This page documents all **19 registered `docx.*` tools** available in Docwright AI Toolkits. Every tool can be invoked via **MCP** (`docx.<tool>` or `docx_<tool>`), **CLI** (`docwright docx.<tool> --spec payload.json`), or **Python SDK** (`from doctools.operations.docx import docx_<tool>`).
 
-**Parameters**:
-- `spec` (*object*, required): The complete `DocSpec` specification containing `page_setup`, `default_font`, `sections`, and `blocks` (paragraphs, headings, tables).
-- `output_path` (*string*, optional): Destination path for the `.docx` file.
+## `docx.inspect_structure`
 
-**Example Request**:
-```json
-{
-  "spec": {
-    "title": "Quarterly Financial Performance",
-    "page_setup": {
-      "orientation": "portrait",
-      "margin_top_cm": 2.0,
-      "margin_bottom_cm": 2.0,
-      "margin_left_cm": 2.5,
-      "margin_right_cm": 2.5
-    },
-    "default_font": {
-      "name": "Times New Roman",
-      "size_pt": 11.0
-    },
-    "blocks": [
-      {
-        "type": "heading",
-        "level": 1,
-        "text": "1. Executive Summary"
-      },
-      {
-        "type": "paragraph",
-        "runs": [
-          { "text": "Net revenue increased by " },
-          { "text": "14.2% YoY", "bold": true },
-          { "text": " across all enterprise divisions." }
-        ]
-      }
-    ]
-  },
-  "output_path": "output/quarterly_report.docx"
-}
+Inspect Word document structure tree with stable anchor coordinates for AI analysis and editing.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Yes** | Path to Word document (.docx) or FileRef URI (e.g. 'file:///...' or local relative/absolute path) |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.inspect_structure --json '{"file_ref": "sample_file_ref.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_inspect_structure
+res = docx_inspect_structure(**{
+  "file_ref": "sample_file_ref.docx"
+})
+print(res.success, res.result)
 ```
 
 ---
 
-### 2. `docx.measure_pdf_layout`
-Analyzes scanned PDF pages using Hough line transforms and OpenCV morphological kernels to extract table grid topology without coordinate hallucinations.
+## `docx.validate`
 
-**Parameters**:
-- `file_path` (*string*, required): Path to the scanned PDF document.
-- `page_index` (*integer*, optional, default: 0): Page index to measure (0-indexed).
-- `dpi` (*integer*, optional, default: 300): Rasterization resolution.
+Validate OpenXML package and document quality against gates DG-01 through DG-08.
 
-**Returns**:
-`LayoutSpec` containing detected rotation angle ($\theta$), column ratios (`[0.25, 0.45, 0.30]`), horizontal line positions, and detected cell IDs (`c0_0`, `c0_1`).
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Yes** | Path to Word document (.docx) or FileRef URI (e.g. 'file:///...' or local relative/absolute path) |
 
----
+**Usage Examples (MCP / CLI / Python SDK):**
 
-### 3. `docx.populate_layout_text`
-Maps textual content into measured layout cells without manual coordinate math.
+```bash
+# 1. CLI Execution
+docwright docx.validate --json '{"file_ref": "sample_file_ref.docx"}'
+```
 
-**Parameters**:
-- `layout_spec` (*object*, required): Geometric `LayoutSpec` returned from `docx.measure_pdf_layout`.
-- `cell_data` (*object*, required): Dictionary mapping cell IDs to text or run specs (`{"c0_0": "Item", "c0_1": "Description"}`).
-
----
-
-### 4. `docx.compile_layout_spec`
-Compiles physical geometric measurements into clean, normalized `DocSpec` representations ready for building.
-
-**Parameters**:
-- `layout_spec` (*object*, required): The populated `LayoutSpec`.
-- `merge_continued_tables` (*boolean*, optional, default: true): Whether to merge continued tables across page splits.
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_validate
+res = docx_validate(**{
+  "file_ref": "sample_file_ref.docx"
+})
+print(res.success, res.result)
+```
 
 ---
 
-### 5. `docx.patch`
-Executes surgical, format-preserving text replacements without destroying surrounding run styles.
+## `docx.extract_media`
 
-**Parameters**:
-- `file_path` (*string*, required): Path to the target `.docx` file.
-- `replacements` (*array of objects*, required): List of `{ "target": "old text", "replacement": "new text" }`.
+Extract embedded images/media from Word package into FileStore with dynamic geometry resolution.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Yes** | Path to Word document (.docx) or FileRef URI (e.g. 'file:///...' or local relative/absolute path) |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.extract_media --json '{"file_ref": "sample_file_ref.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_extract_media
+res = docx_extract_media(**{
+  "file_ref": "sample_file_ref.docx"
+})
+print(res.success, res.result)
+```
 
 ---
 
-### 6. `docx.validate`
-Audits document health against OpenXML structural invariants and returns diagnostic issues.
+## `docx.to_markdown`
 
-**Parameters**:
-- `file_path` (*string*, required): Path to `.docx` file to validate.
+Convert Word document to clean CommonMark Markdown for AI summarization and analysis (Read-Only).
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Yes** | Path to Word document (.docx) or FileRef URI |
+| `extract_images` | `boolean` | **Optional** | Whether to extract embedded images into FileStore and link them in Markdown |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.to_markdown --json '{"file_ref": "sample_file_ref.docx", "extract_images": "sample_extract_images.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_to_markdown
+res = docx_to_markdown(**{
+  "file_ref": "sample_file_ref.docx",
+  "extract_images": "sample_extract_images.docx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.render_template`
+
+Render Word document from Jinja2 template via SandboxedEnvironment with OpenXML guardrails.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `template_ref_or_id` | `string / object` | **Yes** | Registered template ID or file path/URI to .docx template |
+| `context_data` | `object` | **Optional** | Key-value dictionary containing template context variables |
+| `layout_policy` | `object` | **Optional** | Optional layout policy (e.g. enforce_cant_split, enforce_tbl_header) |
+| `manifest` | `object` | **Optional** | Optional template manifest with slot definitions and validation rules |
+| `output_path` | `string` | **Optional** | Optional file path to write rendered .docx directly to disk |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.render_template --json '{"template_ref_or_id": "sample_template_ref_or_id.docx", "context_data": "sample_context_data.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_render_template
+res = docx_render_template(**{
+  "template_ref_or_id": "sample_template_ref_or_id.docx",
+  "context_data": "sample_context_data.docx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.build_document`
+
+Unified Word document builder: Path A (Jinja Template) and Path B (DocSpec JSON).
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `source_type` | `string` | **Optional** | Build mode: 'template' (Jinja2 Path A) or 'docspec' (Structured DocSpec JSON Path B) |
+| `template_id` | `string` | **Optional** | Registered template identifier (when source_type='template') |
+| `template_ref` | `string / object` | **Optional** | Path or FileRef to template file (when source_type='template') |
+| `docspec` | `object` | **Optional** | DocSpec v1.1 payload (when source_type='docspec') |
+| `context_data` | `object` | **Optional** | Template context variables (when source_type='template') |
+| `layout_policy` | `object` | **Optional** | Optional OpenXML layout policy |
+| `output_path` | `string` | **Optional** | Optional destination path for the generated document |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.build_document --json '{"source_type": "sample_source_type.docx", "template_id": "sample_template_id.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_build_document
+res = docx_build_document(**{
+  "source_type": "sample_source_type.docx",
+  "template_id": "sample_template_id.docx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.patch`
+
+In-place patch of Word documents via declarative operations, preserving run formatting and OpenXML guardrails.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Yes** | Path or FileRef URI to target .docx document to patch |
+| `operations` | `array` | **Yes** | List of declarative patch operations (e.g. replace_text, insert_paragraph, set_cell) |
+| `output_path` | `string` | **Optional** | Optional destination path for patched document |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.patch --json '{"file_ref": "sample_file_ref.docx", "operations": "sample_operations.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_patch
+res = docx_patch(**{
+  "file_ref": "sample_file_ref.docx",
+  "operations": "sample_operations.docx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.merge`
+
+Merge sub-documents and appendices into a primary Word document, resolving style conflicts.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `base_ref` | `string / object` | **Yes** | Path or FileRef URI to base .docx document |
+| `parts` | `array` | **Yes** | List of paths or FileRefs to sub-documents/appendices to merge into base |
+| `style_conflict_policy` | `string` | **Optional** | Style resolution strategy: 'master_wins', 'isolate', or 'strict' |
+| `output_path` | `string` | **Optional** | Optional destination path for merged document |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.merge --json '{"base_ref": "sample_base_ref.docx", "parts": "sample_parts.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_merge
+res = docx_merge(**{
+  "base_ref": "sample_base_ref.docx",
+  "parts": "sample_parts.docx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.lint_template`
+
+Read-only lint of DOCX templates: detect Jinja2 syntax, split tags, dynamic fields, SSTI risks.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `template_ref` | `string / object` | **Yes** | Path or FileRef URI to DOCX template file to inspect and lint |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.lint_template --json '{"template_ref": "sample_template_ref.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_lint_template
+res = docx_lint_template(**{
+  "template_ref": "sample_template_ref.docx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.normalize_template`
+
+Consolidate split Jinja runs, clean up w:proofErr tags, and produce normalized template DOCX.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `template_ref` | `string / object` | **Yes** | Path or FileRef URI to DOCX template file to normalize |
+| `output_path` | `string` | **Optional** | Optional destination path for normalized template |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.normalize_template --json '{"template_ref": "sample_template_ref.docx", "output_path": "sample_output_path.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_normalize_template
+res = docx_normalize_template(**{
+  "template_ref": "sample_template_ref.docx",
+  "output_path": "sample_output_path.docx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.register_template`
+
+Register template with manifest YAML/JSON: schema validation and sha256 checksum verification.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `template_ref` | `string / object` | **Yes** | Path or FileRef URI to DOCX template file |
+| `manifest` | `object / string` | **Yes** | Template manifest dictionary or path to manifest YAML/JSON |
+| `force_version` | `integer` | **Optional** | Optional explicit version number override |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.register_template --json '{"template_ref": "sample_template_ref.docx", "manifest": "sample_manifest.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_register_template
+res = docx_register_template(**{
+  "template_ref": "sample_template_ref.docx",
+  "manifest": "sample_manifest.docx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.list_templates`
+
+List all registered templates in the template repository.
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.list_templates --json '{}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_list_templates
+res = docx_list_templates(**{})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.get_template_manifest`
+
+Get manifest details, variables, and layout constraints of a registered template.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `template_id` | `string` | **Yes** | Identifier of registered template |
+| `version` | `integer` | **Optional** | Specific version number (default: latest) |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.get_template_manifest --json '{"template_id": "sample_template_id.docx", "version": "sample_version.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_get_template_manifest
+res = docx_get_template_manifest(**{
+  "template_id": "sample_template_id.docx",
+  "version": "sample_version.docx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.update_fields`
+
+Detect dynamic fields (TOC, PAGEREF) and manage w:updateFields flag for auto-refresh on Word open.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Yes** | Path or FileRef URI to Word document (.docx) |
+| `field_update` | `string` | **Optional** | Update policy: 'auto', 'none', or 'update_on_open' |
+| `toc_mode` | `string` | **Optional** | TOC mode: 'with_page_numbers' or 'no_page_numbers' |
+| `output_path` | `string` | **Optional** | Optional destination path for updated document |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.update_fields --json '{"file_ref": "sample_file_ref.docx", "field_update": "sample_field_update.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_update_fields
+res = docx_update_fields(**{
+  "file_ref": "sample_file_ref.docx",
+  "field_update": "sample_field_update.docx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.extract`
+
+2-Tier Faithful IR: Dump full L1/L2 DocumentModel JSON into FileStore, returning a lightweight summary (< 25 KB).
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Yes** | FileRef or local path to target .docx document |
+| `outline_offset` | `integer` | **Optional** | Pagination offset for headings outline (0-indexed) |
+| `outline_limit` | `integer` | **Optional** | Pagination limit for headings outline |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.extract --json '{"file_ref": "sample_file_ref.docx", "outline_offset": "sample_outline_offset.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_extract
+res = docx_extract(**{
+  "file_ref": "sample_file_ref.docx",
+  "outline_offset": "sample_outline_offset.docx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.query`
+
+Targeted slice query on extracted DOCX model (heading, table, search, section geometry).
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `model_ref` | `string / object` | **Yes** | Model JSON FileRef or path to .docx document |
+| `heading` | `string` | **Optional** | Heading title to extract section paragraphs under |
+| `table_index` | `integer` | **Optional** | Table index to slice |
+| `row_range` | `array` | **Optional** | Row index range [start, end] for table slice |
+| `search_text` | `string` | **Optional** | Substring to search across paragraphs and table cells |
+| `section_index` | `integer` | **Optional** | Section index to retrieve page setup and geometry |
+| `outline` | `boolean` | **Optional** | Whether to query paginated outline |
+| `offset` | `integer` | **Optional** | Pagination offset |
+| `limit` | `integer` | **Optional** | Pagination limit |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.query --json '{"model_ref": "sample_model_ref.docx", "heading": "sample_heading.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_query
+res = docx_query(**{
+  "model_ref": "sample_model_ref.docx",
+  "heading": "sample_heading.docx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.measure_pdf_layout`
+
+Document Vision engine: measures page skew, table bounds, and column ratios from scanned PDF.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `pdf_path` | `string / object` | **Yes** | FileRef or local path to target PDF document |
+| `page_indices` | `array` | **Optional** | 0-indexed list of page indices to measure (None for all) |
+| `dpi` | `integer` | **Optional** | Rasterization DPI for morphological analysis |
+| `output_path` | `string` | **Optional** | Optional path to save generated layout_spec.json |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.measure_pdf_layout --json '{"pdf_path": "sample_pdf_path.docx", "page_indices": "sample_page_indices.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_measure_pdf_layout
+res = docx_measure_pdf_layout(**{
+  "pdf_path": "sample_pdf_path.docx",
+  "page_indices": "sample_page_indices.docx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.populate_layout_text`
+
+Populates transcribed text into measured LayoutSpec cells by cell ID or table row matrix.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `layout_spec` | `string / object` | **Yes** | LayoutSpec JSON object, file path, or FileRef |
+| `text_data` | `object / array` | **Yes** | Transcription mapping. Either `{`'cell_id': 'text', ...`}` or [`{`'table_id': '...', 'rows': [['...', '...']]`}`] or [`{`'cell_id': '...', 'text': '...'`}`] |
+| `default_origin` | `string` | **Optional** | Evidence origin ('observed' or 'inferred') |
+| `default_status` | `string` | **Optional** | Resolution status ('accepted', 'pending', 'needs_review') |
+| `output_path` | `string` | **Optional** | Optional path to save updated layout_spec.json |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.populate_layout_text --json '{"layout_spec": "sample_layout_spec.docx", "text_data": "sample_text_data.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_populate_layout_text
+res = docx_populate_layout_text(**{
+  "layout_spec": "sample_layout_spec.docx",
+  "text_data": "sample_text_data.docx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.compile_layout_spec`
+
+Deterministic LayoutSpec compiler: transforms measured LayoutSpec into DocSpec v1.1.
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `layout_spec` | `string / object` | **Yes** | LayoutSpec JSON object, file path, or FileRef |
+| `default_font` | `string` | **Optional** | Default typography font for compiled DocSpec |
+| `fail_on_unmeasurable` | `boolean` | **Optional** | Fail-closed when table has UNMEASURABLE geometric mesh |
+| `fail_on_review` | `boolean` | **Optional** | Fail-closed when elements require human review |
+| `output_path` | `string` | **Optional** | Optional path to save compiled docspec.json |
+
+**Usage Examples (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.compile_layout_spec --json '{"layout_spec": "sample_layout_spec.docx", "default_font": "sample_default_font.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_compile_layout_spec
+res = docx_compile_layout_spec(**{
+  "layout_spec": "sample_layout_spec.docx",
+  "default_font": "sample_default_font.docx"
+})
+print(res.success, res.result)
+```

@@ -1,41 +1,44 @@
 ---
 name: docwright-docx
-description: Complete operational guide and decision tree for Word (DOCX) engineering via Docwright AI Toolkits.
+description: Complete operational guide for all 19 Word (docx.*) tools across MCP, Python SDK, and CLI.
 ---
 
-# Docwright DOCX Engineering Skill
+# Docwright Word (DOCX) Engineering Skill (19 Tools)
 
-Use this skill whenever creating, modifying, patching, or reconstructing Microsoft Word documents (`.docx`).
+Use this skill whenever creating, templating, patching, extracting, or reconstructing Microsoft Word documents (`.docx`).
 
 ---
 
-## 1. Decision Tree: Choosing the Compilation Path
+## 1. Choosing the Right Word Workflow
 
+- **Building New Documents from Scratch**: Call `docx.build_document` with a structured `DocSpec` JSON (`page_setup`, `headings`, `paragraphs`, `tables`). Tables automatically receive repeating header rows and row-split locks across pages.
+- **Populating Corporate Jinja Templates**:
+  1. Run `docx.normalize_template` to heal split `{{ variable }}` tags across XML runs.
+  2. Run `docx.render_template` with your JSON `context`.
+- **Updating Text in Existing Documents**: Run `docx.patch` to replace specific strings while preserving original run font, size, color, and bold/italic formatting.
+- **Reading Long Documents Without Context Overflow**: Run `docx.extract` followed by `docx.query`, or `docx.to_markdown` for read-only summarization.
+- **Reconstructing Scanned PDFs into 1:1 Editable Word Forms**:
+  1. `docx.measure_pdf_layout`: Measure table grid geometry and cell IDs (`c0_0`, `c0_1`, ...).
+  2. `docx.populate_layout_text`: Map transcribed text to each `cell_id` (supports `row_span` and `col_span`).
+  3. `docx.compile_layout_spec`: Compile into an editable `.docx` file.
+- **Quality Verification**: Always run `docx.validate` on the output file.
+
+---
+
+## 2. Python SDK & CLI Quick Examples
+
+```python
+from doctools.operations.docx import (
+    docx_build_document,
+    docx_normalize_template,
+    docx_render_template,
+    docx_patch,
+    docx_validate,
+)
 ```
-Does the user have an existing .docx corporate template with Jinja tags?
-├── YES ──> Use Path A: docx.render_template
-└── NO  ──> Use Path B: docx.build_document (DocSpec DSL)
+
+```bash
+docwright schema docx.build_document
+docwright docx.build_document --spec spec.json
+docwright docx.validate --json '{"file_ref": "output/report.docx"}'
 ```
-
-### Path A: Template Rendering (`docx.render_template`)
-- Load existing template containing `{{ variable_name }}` or `{% for row in rows %}`.
-- Provide JSON context dictionary.
-- The engine sanitizes run boundaries and preserves all corporate header/footer styling.
-
-### Path B: Algorithmic Synthesis (`docx.build_document`)
-- Define page layout (`orientation`, `margin_*_cm`).
-- Define blocks:
-  - `heading` (level 1-3)
-  - `paragraph` (typed `runs` with `bold`, `italic`, `underline`, `font_size_pt`)
-  - `table` (`headers`, `col_widths`, `rows`)
-- Automatically receives `<w:cantSplit/>` on rows and `<w:tblHeader/>` on header rows.
-
----
-
-## 2. Scanned PDF 1:1 Reconstruction Pipeline
-
-When converting a scanned paper form or PDF into Word:
-1. `docx.measure_pdf_layout`: Extract physical table geometry and column ratios.
-2. `docx.populate_layout_text`: Map extracted text into physical cell IDs (`c0_0`).
-3. `docx.compile_layout_spec`: Compile to normalized `DocSpec`.
-4. `docx.build_document`: Generate the final pixel-accurate Word document.

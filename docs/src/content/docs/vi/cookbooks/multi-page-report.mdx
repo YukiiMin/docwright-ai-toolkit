@@ -1,0 +1,67 @@
+---
+title: "Kịch Bản Mẫu: Xuất Báo Cáo Word Nhiều Trang"
+description: Khởi tạo báo cáo Word nhiều trang với tiêu đề bảng tự động lặp lại và kiểm định chất lượng qua CLI hoặc Python SDK.
+---
+
+Kịch bản này hướng dẫn cách tạo một báo cáo kỹ thuật nhiều trang bằng `docx.build_document` và kiểm định qua `docx.validate`.
+
+## 1. Tạo File Đặc Tả `report_spec.json`
+
+```json
+{
+  "output_path": "output/bao_cao_kien_truc_q4.docx",
+  "spec": {
+    "page_setup": {
+      "orientation": "portrait",
+      "margin_top_cm": 2.0,
+      "margin_bottom_cm": 2.0,
+      "margin_left_cm": 2.5,
+      "margin_right_cm": 2.0
+    },
+    "default_font_name": "Times New Roman",
+    "default_font_size_pt": 11,
+    "blocks": [
+      {
+        "type": "heading",
+        "level": 1,
+        "text": "Báo Cáo Nghiệm Thu Kiến Trúc Quý 4"
+      },
+      {
+        "type": "paragraph",
+        "text": "Tổng hợp tiến độ bàn giao và trạng thái kiểm định chất lượng của các phân hệ.",
+        "space_after_pt": 8
+      },
+      {
+        "type": "table",
+        "col_widths_cm": [2.0, 5.5, 4.0, 5.0],
+        "header_rows": 1,
+        "rows": [
+          ["Mã", "Hạng Mục Bàn Giao", "Đơn Vị Phụ Trách", "Trạng Thái Kiểm Định"],
+          ["ARC-01", "Đóng gói nhị phân C-Extensions", "Nhóm Hạ tầng", "Đạt 100% (0 rò rỉ mã nguồn)"],
+          ["ARC-02", "Bảo vệ bảng biểu qua trang", "Nhóm Word Core", "Đạt 100% (Lặp header tự động)"],
+          ["ARC-03", "Tự động dịch vùng công thức 2D", "Nhóm Excel Core", "Đạt 100% (Cập nhật hàm SUM)"]
+        ]
+      }
+    ]
+  }
+}
+```
+
+## 2. Thực Thi Qua CLI Hoặc Python SDK
+
+```bash
+# Cách 1: Chạy trực tiếp trên Terminal (CLI)
+docwright docx.build_document --spec report_spec.json
+docwright docx.validate --json '{"file_ref": "output/bao_cao_kien_truc_q4.docx"}'
+```
+
+```python
+# Cách 2: Import và gọi trong code Python
+import json
+from doctools.operations.docx import docx_build_document, docx_validate
+
+payload = json.loads(open("report_spec.json", encoding="utf-8").read())
+build_res = docx_build_document(**payload)
+val_res = docx_validate(file_ref="output/bao_cao_kien_truc_q4.docx")
+print("Hoàn tất:", build_res.success and val_res.success)
+```

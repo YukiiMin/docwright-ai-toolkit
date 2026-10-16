@@ -1,0 +1,550 @@
+---
+title: Tham Chiếu Công Cụ Word (docx.* — 19 Tools)
+description: Tài liệu tham chiếu API, CLI và MCP đầy đủ cho toàn bộ 19 công cụ xử lý tài liệu Word trong Docwright.
+---
+
+Trang này liệt kê đầy đủ **19 công cụ `docx.*`** đã đăng ký trong Docwright AI Toolkits. Mọi công cụ đều có thể gọi trực tiếp qua **MCP** (`docx.<tool>` hoặc `docx_<tool>`), **CLI** (`docwright docx.<tool> --spec payload.json`), hoặc **Python SDK** (`from doctools.operations.docx import docx_<tool>`).
+
+## `docx.inspect_structure`
+
+Inspect Word document structure tree with stable anchor coordinates for AI analysis and editing.
+
+| Tham số | Kiểu dữ liệu | Bắt buộc | Mô tả |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Có** | Path to Word document (.docx) or FileRef URI (e.g. 'file:///...' or local relative/absolute path) |
+
+**Ví dụ Gọi Công cụ (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.inspect_structure --json '{"file_ref": "sample_file_ref.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_inspect_structure
+res = docx_inspect_structure(**{
+  "file_ref": "sample_file_ref.docx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.validate`
+
+Validate OpenXML package and document quality against gates DG-01 through DG-08.
+
+| Tham số | Kiểu dữ liệu | Bắt buộc | Mô tả |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Có** | Path to Word document (.docx) or FileRef URI (e.g. 'file:///...' or local relative/absolute path) |
+
+**Ví dụ Gọi Công cụ (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.validate --json '{"file_ref": "sample_file_ref.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_validate
+res = docx_validate(**{
+  "file_ref": "sample_file_ref.docx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.extract_media`
+
+Extract embedded images/media from Word package into FileStore with dynamic geometry resolution.
+
+| Tham số | Kiểu dữ liệu | Bắt buộc | Mô tả |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Có** | Path to Word document (.docx) or FileRef URI (e.g. 'file:///...' or local relative/absolute path) |
+
+**Ví dụ Gọi Công cụ (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.extract_media --json '{"file_ref": "sample_file_ref.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_extract_media
+res = docx_extract_media(**{
+  "file_ref": "sample_file_ref.docx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.to_markdown`
+
+Convert Word document to clean CommonMark Markdown for AI summarization and analysis (Read-Only).
+
+| Tham số | Kiểu dữ liệu | Bắt buộc | Mô tả |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Có** | Path to Word document (.docx) or FileRef URI |
+| `extract_images` | `boolean` | **Tùy chọn** | Whether to extract embedded images into FileStore and link them in Markdown |
+
+**Ví dụ Gọi Công cụ (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.to_markdown --json '{"file_ref": "sample_file_ref.docx", "extract_images": "sample_extract_images.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_to_markdown
+res = docx_to_markdown(**{
+  "file_ref": "sample_file_ref.docx",
+  "extract_images": "sample_extract_images.docx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.render_template`
+
+Render Word document from Jinja2 template via SandboxedEnvironment with OpenXML guardrails.
+
+| Tham số | Kiểu dữ liệu | Bắt buộc | Mô tả |
+| :--- | :--- | :--- | :--- |
+| `template_ref_or_id` | `string / object` | **Có** | Registered template ID or file path/URI to .docx template |
+| `context_data` | `object` | **Tùy chọn** | Key-value dictionary containing template context variables |
+| `layout_policy` | `object` | **Tùy chọn** | Optional layout policy (e.g. enforce_cant_split, enforce_tbl_header) |
+| `manifest` | `object` | **Tùy chọn** | Optional template manifest with slot definitions and validation rules |
+| `output_path` | `string` | **Tùy chọn** | Optional file path to write rendered .docx directly to disk |
+
+**Ví dụ Gọi Công cụ (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.render_template --json '{"template_ref_or_id": "sample_template_ref_or_id.docx", "context_data": "sample_context_data.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_render_template
+res = docx_render_template(**{
+  "template_ref_or_id": "sample_template_ref_or_id.docx",
+  "context_data": "sample_context_data.docx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.build_document`
+
+Unified Word document builder: Path A (Jinja Template) and Path B (DocSpec JSON).
+
+| Tham số | Kiểu dữ liệu | Bắt buộc | Mô tả |
+| :--- | :--- | :--- | :--- |
+| `source_type` | `string` | **Tùy chọn** | Build mode: 'template' (Jinja2 Path A) or 'docspec' (Structured DocSpec JSON Path B) |
+| `template_id` | `string` | **Tùy chọn** | Registered template identifier (when source_type='template') |
+| `template_ref` | `string / object` | **Tùy chọn** | Path or FileRef to template file (when source_type='template') |
+| `docspec` | `object` | **Tùy chọn** | DocSpec v1.1 payload (when source_type='docspec') |
+| `context_data` | `object` | **Tùy chọn** | Template context variables (when source_type='template') |
+| `layout_policy` | `object` | **Tùy chọn** | Optional OpenXML layout policy |
+| `output_path` | `string` | **Tùy chọn** | Optional destination path for the generated document |
+
+**Ví dụ Gọi Công cụ (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.build_document --json '{"source_type": "sample_source_type.docx", "template_id": "sample_template_id.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_build_document
+res = docx_build_document(**{
+  "source_type": "sample_source_type.docx",
+  "template_id": "sample_template_id.docx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.patch`
+
+In-place patch of Word documents via declarative operations, preserving run formatting and OpenXML guardrails.
+
+| Tham số | Kiểu dữ liệu | Bắt buộc | Mô tả |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Có** | Path or FileRef URI to target .docx document to patch |
+| `operations` | `array` | **Có** | List of declarative patch operations (e.g. replace_text, insert_paragraph, set_cell) |
+| `output_path` | `string` | **Tùy chọn** | Optional destination path for patched document |
+
+**Ví dụ Gọi Công cụ (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.patch --json '{"file_ref": "sample_file_ref.docx", "operations": "sample_operations.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_patch
+res = docx_patch(**{
+  "file_ref": "sample_file_ref.docx",
+  "operations": "sample_operations.docx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.merge`
+
+Merge sub-documents and appendices into a primary Word document, resolving style conflicts.
+
+| Tham số | Kiểu dữ liệu | Bắt buộc | Mô tả |
+| :--- | :--- | :--- | :--- |
+| `base_ref` | `string / object` | **Có** | Path or FileRef URI to base .docx document |
+| `parts` | `array` | **Có** | List of paths or FileRefs to sub-documents/appendices to merge into base |
+| `style_conflict_policy` | `string` | **Tùy chọn** | Style resolution strategy: 'master_wins', 'isolate', or 'strict' |
+| `output_path` | `string` | **Tùy chọn** | Optional destination path for merged document |
+
+**Ví dụ Gọi Công cụ (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.merge --json '{"base_ref": "sample_base_ref.docx", "parts": "sample_parts.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_merge
+res = docx_merge(**{
+  "base_ref": "sample_base_ref.docx",
+  "parts": "sample_parts.docx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.lint_template`
+
+Read-only lint of DOCX templates: detect Jinja2 syntax, split tags, dynamic fields, SSTI risks.
+
+| Tham số | Kiểu dữ liệu | Bắt buộc | Mô tả |
+| :--- | :--- | :--- | :--- |
+| `template_ref` | `string / object` | **Có** | Path or FileRef URI to DOCX template file to inspect and lint |
+
+**Ví dụ Gọi Công cụ (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.lint_template --json '{"template_ref": "sample_template_ref.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_lint_template
+res = docx_lint_template(**{
+  "template_ref": "sample_template_ref.docx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.normalize_template`
+
+Consolidate split Jinja runs, clean up w:proofErr tags, and produce normalized template DOCX.
+
+| Tham số | Kiểu dữ liệu | Bắt buộc | Mô tả |
+| :--- | :--- | :--- | :--- |
+| `template_ref` | `string / object` | **Có** | Path or FileRef URI to DOCX template file to normalize |
+| `output_path` | `string` | **Tùy chọn** | Optional destination path for normalized template |
+
+**Ví dụ Gọi Công cụ (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.normalize_template --json '{"template_ref": "sample_template_ref.docx", "output_path": "sample_output_path.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_normalize_template
+res = docx_normalize_template(**{
+  "template_ref": "sample_template_ref.docx",
+  "output_path": "sample_output_path.docx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.register_template`
+
+Register template with manifest YAML/JSON: schema validation and sha256 checksum verification.
+
+| Tham số | Kiểu dữ liệu | Bắt buộc | Mô tả |
+| :--- | :--- | :--- | :--- |
+| `template_ref` | `string / object` | **Có** | Path or FileRef URI to DOCX template file |
+| `manifest` | `object / string` | **Có** | Template manifest dictionary or path to manifest YAML/JSON |
+| `force_version` | `integer` | **Tùy chọn** | Optional explicit version number override |
+
+**Ví dụ Gọi Công cụ (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.register_template --json '{"template_ref": "sample_template_ref.docx", "manifest": "sample_manifest.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_register_template
+res = docx_register_template(**{
+  "template_ref": "sample_template_ref.docx",
+  "manifest": "sample_manifest.docx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.list_templates`
+
+List all registered templates in the template repository.
+
+**Ví dụ Gọi Công cụ (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.list_templates --json '{}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_list_templates
+res = docx_list_templates(**{})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.get_template_manifest`
+
+Get manifest details, variables, and layout constraints of a registered template.
+
+| Tham số | Kiểu dữ liệu | Bắt buộc | Mô tả |
+| :--- | :--- | :--- | :--- |
+| `template_id` | `string` | **Có** | Identifier of registered template |
+| `version` | `integer` | **Tùy chọn** | Specific version number (default: latest) |
+
+**Ví dụ Gọi Công cụ (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.get_template_manifest --json '{"template_id": "sample_template_id.docx", "version": "sample_version.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_get_template_manifest
+res = docx_get_template_manifest(**{
+  "template_id": "sample_template_id.docx",
+  "version": "sample_version.docx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.update_fields`
+
+Detect dynamic fields (TOC, PAGEREF) and manage w:updateFields flag for auto-refresh on Word open.
+
+| Tham số | Kiểu dữ liệu | Bắt buộc | Mô tả |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Có** | Path or FileRef URI to Word document (.docx) |
+| `field_update` | `string` | **Tùy chọn** | Update policy: 'auto', 'none', or 'update_on_open' |
+| `toc_mode` | `string` | **Tùy chọn** | TOC mode: 'with_page_numbers' or 'no_page_numbers' |
+| `output_path` | `string` | **Tùy chọn** | Optional destination path for updated document |
+
+**Ví dụ Gọi Công cụ (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.update_fields --json '{"file_ref": "sample_file_ref.docx", "field_update": "sample_field_update.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_update_fields
+res = docx_update_fields(**{
+  "file_ref": "sample_file_ref.docx",
+  "field_update": "sample_field_update.docx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.extract`
+
+2-Tier Faithful IR: Dump full L1/L2 DocumentModel JSON into FileStore, returning a lightweight summary (< 25 KB).
+
+| Tham số | Kiểu dữ liệu | Bắt buộc | Mô tả |
+| :--- | :--- | :--- | :--- |
+| `file_ref` | `string / object` | **Có** | FileRef or local path to target .docx document |
+| `outline_offset` | `integer` | **Tùy chọn** | Pagination offset for headings outline (0-indexed) |
+| `outline_limit` | `integer` | **Tùy chọn** | Pagination limit for headings outline |
+
+**Ví dụ Gọi Công cụ (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.extract --json '{"file_ref": "sample_file_ref.docx", "outline_offset": "sample_outline_offset.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_extract
+res = docx_extract(**{
+  "file_ref": "sample_file_ref.docx",
+  "outline_offset": "sample_outline_offset.docx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.query`
+
+Targeted slice query on extracted DOCX model (heading, table, search, section geometry).
+
+| Tham số | Kiểu dữ liệu | Bắt buộc | Mô tả |
+| :--- | :--- | :--- | :--- |
+| `model_ref` | `string / object` | **Có** | Model JSON FileRef or path to .docx document |
+| `heading` | `string` | **Tùy chọn** | Heading title to extract section paragraphs under |
+| `table_index` | `integer` | **Tùy chọn** | Table index to slice |
+| `row_range` | `array` | **Tùy chọn** | Row index range [start, end] for table slice |
+| `search_text` | `string` | **Tùy chọn** | Substring to search across paragraphs and table cells |
+| `section_index` | `integer` | **Tùy chọn** | Section index to retrieve page setup and geometry |
+| `outline` | `boolean` | **Tùy chọn** | Whether to query paginated outline |
+| `offset` | `integer` | **Tùy chọn** | Pagination offset |
+| `limit` | `integer` | **Tùy chọn** | Pagination limit |
+
+**Ví dụ Gọi Công cụ (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.query --json '{"model_ref": "sample_model_ref.docx", "heading": "sample_heading.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_query
+res = docx_query(**{
+  "model_ref": "sample_model_ref.docx",
+  "heading": "sample_heading.docx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.measure_pdf_layout`
+
+Document Vision engine: measures page skew, table bounds, and column ratios from scanned PDF.
+
+| Tham số | Kiểu dữ liệu | Bắt buộc | Mô tả |
+| :--- | :--- | :--- | :--- |
+| `pdf_path` | `string / object` | **Có** | FileRef or local path to target PDF document |
+| `page_indices` | `array` | **Tùy chọn** | 0-indexed list of page indices to measure (None for all) |
+| `dpi` | `integer` | **Tùy chọn** | Rasterization DPI for morphological analysis |
+| `output_path` | `string` | **Tùy chọn** | Optional path to save generated layout_spec.json |
+
+**Ví dụ Gọi Công cụ (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.measure_pdf_layout --json '{"pdf_path": "sample_pdf_path.docx", "page_indices": "sample_page_indices.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_measure_pdf_layout
+res = docx_measure_pdf_layout(**{
+  "pdf_path": "sample_pdf_path.docx",
+  "page_indices": "sample_page_indices.docx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.populate_layout_text`
+
+Populates transcribed text into measured LayoutSpec cells by cell ID or table row matrix.
+
+| Tham số | Kiểu dữ liệu | Bắt buộc | Mô tả |
+| :--- | :--- | :--- | :--- |
+| `layout_spec` | `string / object` | **Có** | LayoutSpec JSON object, file path, or FileRef |
+| `text_data` | `object / array` | **Có** | Transcription mapping. Either `{`'cell_id': 'text', ...`}` or [`{`'table_id': '...', 'rows': [['...', '...']]`}`] or [`{`'cell_id': '...', 'text': '...'`}`] |
+| `default_origin` | `string` | **Tùy chọn** | Evidence origin ('observed' or 'inferred') |
+| `default_status` | `string` | **Tùy chọn** | Resolution status ('accepted', 'pending', 'needs_review') |
+| `output_path` | `string` | **Tùy chọn** | Optional path to save updated layout_spec.json |
+
+**Ví dụ Gọi Công cụ (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.populate_layout_text --json '{"layout_spec": "sample_layout_spec.docx", "text_data": "sample_text_data.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_populate_layout_text
+res = docx_populate_layout_text(**{
+  "layout_spec": "sample_layout_spec.docx",
+  "text_data": "sample_text_data.docx"
+})
+print(res.success, res.result)
+```
+
+---
+
+## `docx.compile_layout_spec`
+
+Deterministic LayoutSpec compiler: transforms measured LayoutSpec into DocSpec v1.1.
+
+| Tham số | Kiểu dữ liệu | Bắt buộc | Mô tả |
+| :--- | :--- | :--- | :--- |
+| `layout_spec` | `string / object` | **Có** | LayoutSpec JSON object, file path, or FileRef |
+| `default_font` | `string` | **Tùy chọn** | Default typography font for compiled DocSpec |
+| `fail_on_unmeasurable` | `boolean` | **Tùy chọn** | Fail-closed when table has UNMEASURABLE geometric mesh |
+| `fail_on_review` | `boolean` | **Tùy chọn** | Fail-closed when elements require human review |
+| `output_path` | `string` | **Tùy chọn** | Optional path to save compiled docspec.json |
+
+**Ví dụ Gọi Công cụ (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright docx.compile_layout_spec --json '{"layout_spec": "sample_layout_spec.docx", "default_font": "sample_default_font.docx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.operations.docx import docx_compile_layout_spec
+res = docx_compile_layout_spec(**{
+  "layout_spec": "sample_layout_spec.docx",
+  "default_font": "sample_default_font.docx"
+})
+print(res.success, res.result)
+```

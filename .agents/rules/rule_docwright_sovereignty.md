@@ -1,35 +1,26 @@
-# Rule: Docwright AI Sovereignty & Office Document Integrity
+# Rule: Docwright AI Toolkits — Execution & Document Integrity Standards
 
-> **Scope**: Mandatory for any AI Agent (Cursor, Claude Code, Antigravity, Windsurf, Codex) operating on office documents (`.docx`, `.xlsx`, `.drawio`) in this workspace.  
-> **Status**: Non-Negotiable Hard Constraint.
-
----
-
-## 1. Zero Ad-Hoc Library Scripting (Strict Prohibition)
-
-- **NEVER** write ad-hoc Python one-liner scripts or scratch scripts (`python -c "import openpyxl..."`, `python -c "import docx..."`) to inspect, modify, or generate office files.
-- Bypassing Docwright strips DrawingML logos, violates ECMA-376 canonical XML schemas, destroys formula dependency trees, and causes silent file corruption.
-- All operations MUST route through registered **Docwright MCP Tools** or the **Unified CLI Dispatcher** (`docwright <tool> --spec <file.json>`).
+> **Scope**: Applies to AI Agents (Cursor, Claude Code, Antigravity, Windsurf, Codex) operating on Word (`.docx`) and Excel (`.xlsx`) files in this workspace.  
 
 ---
 
-## 2. Execution Hierarchy
+## 1. Preferred Execution Interfaces (3 Modes)
 
-1. **Tier 1 (Preferred)**: MCP Tools (`docx.*`, `xlsx.*`, `diagram.*`) via `docwright-mcp`.
-2. **Tier 2 (CLI Fallback)**: Unified CLI Dispatcher:
+Always use registered **Docwright** interfaces to ensure OpenXML schema compliance, multi-page table protection, DrawingML preservation, and automatic Excel formula range shifting:
+
+1. **Mode 1 — Direct MCP Tools (`docwright-mcp`)**: Invoke `docx.*` (19 tools), `xlsx.*` (31 tools), and `common.compact_json` (1 tool) directly via MCP.
+2. **Mode 2 — Python SDK (`doctools.api` & `doctools.operations`)**: When writing Python scripts, import official SDK functions (`from doctools.api import load_workbook_model, read_table, xlsx_mutate_block` or `from doctools.operations.docx import docx_build_document`).
+3. **Mode 3 — Unified CLI (`docwright`)**:
    ```bash
-   # 1. Discover tool schema
+   docwright list
    docwright schema <tool_name>
-
-   # 2. Execute via structured spec
    docwright <tool_name> --spec payload.json
    ```
 
 ---
 
-## 3. Fail-Closed Protocol
+## 2. Verification & Diagnostics Protocol
 
-- If a command fails or raises an unhandled exception:
-  1. Attempt a MAXIMUM of 1 schema-compliant correction.
-  2. If failure persists, **STOP IMMEDIATELY**, report the raw traceback, and await user feedback.
-  3. NEVER synthesize gate passes (`UG-*`) or claim files are valid without tool verification logs.
+- Always validate generated or modified files with `docx.validate` or `xlsx.validate` before completing a task.
+- Inspect `res.diagnostics.errors` and `res.diagnostics.warnings` in the returned `ResultEnvelope`.
+- If a tool call returns an error, check the parameter schema via `docwright schema <tool_name>` and correct the payload.

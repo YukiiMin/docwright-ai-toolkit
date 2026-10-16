@@ -1,43 +1,29 @@
 ---
-title: Fail-Closed Diagnostic Envelopes
-description: Error handling philosophy and deterministic envelope schema.
+title: Structured Diagnostics & Error Handling
+description: How to inspect ResultEnvelope diagnostics in Python, MCP, and CLI workflows.
 ---
 
-Docwright strictly adheres to the **Fail-Closed Principle**:
-> If an unhandled exception or critical gate error occurs, execution halts immediately and reports a comprehensive diagnostic trace. The system NEVER silently swallows errors or fabricates successful completion.
+Docwright never fails silently. Every operation returns a structured `ResultEnvelope` containing `success` (`bool`), `result` (`dict`), and `diagnostics` (`errors`, `warnings`, `info`).
 
----
+## Inspecting Diagnostics in Python
 
-## Exit Code Contract (CLI)
+```python
+from doctools.operations.xlsx import xlsx_validate
 
-The `docwright` CLI returns standard POSIX exit codes:
+res = xlsx_validate(file_ref="output/financial_report.xlsx")
+print("Execution success:", res.success)
 
-| Exit Code | Meaning | Action Expected from Agent / CI |
-|---|---|---|
-| `0` | **CLEAN SUCCESS** | Operation completed with zero errors or warnings. |
-| `1` | **WARNINGS PRESENT** | Operation succeeded, but non-critical warnings occurred (e.g. style approximation). |
-| `2` | **GATE FAILURE** | One or more critical Universal Quality Gates failed. File was NOT overwritten. |
-| `64` | **USAGE / SCHEMA ERROR** | Bad arguments, missing spec file, or invalid JSON payload. |
+for err in res.diagnostics.errors:
+    print(f"[ERROR {err.code}] {err.message} (Location: {err.location})")
 
----
-
-## ResultEnvelope JSON Schema
-
-```json
-{
-  "success": false,
-  "data": null,
-  "diagnostics": {
-    "errors": [
-      {
-        "code": "UG-01",
-        "message": "Formula in cell E15 references deleted cell #REF!",
-        "location": "Operating_Expenses!E15"
-      }
-    ],
-    "warnings": [],
-    "info": []
-  },
-  "duration_ms": 48
-}
+for warn in res.diagnostics.warnings:
+    print(f"[WARN  {warn.code}] {warn.message} (Location: {warn.location})")
 ```
+
+## Inspecting Diagnostics in CLI / CI Pipelines
+
+When running via the `docwright` CLI, the process exit code automatically reflects the diagnostic severity:
+- **Exit Code `0`**: `success=True` and zero warnings/errors.
+- **Exit Code `1`**: `success=True` with non-blocking warnings.
+- **Exit Code `2`**: `success=False` or one or more validation errors detected.
+- **Exit Code `64`**: CLI usage or JSON syntax error.

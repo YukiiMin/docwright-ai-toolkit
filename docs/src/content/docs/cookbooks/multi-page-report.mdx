@@ -1,71 +1,67 @@
 ---
-title: "Cookbook: Multi-Page Executive Word Report"
-description: Building a clean corporate Word report with repeated headers and zero row splitting.
+title: "Cookbook: Multi-Page Executive Report"
+description: Generate a multi-page Word report with repeating table headers, custom column widths, and automated quality validation.
 ---
 
-import { Steps } from '@astrojs/starlight/components';
+This cookbook shows how to build a structured multi-page Word document using `docx.build_document` and verify it with `docx.validate` across **CLI** and **Python SDK**.
 
-This cookbook demonstrates how to generate a multi-page executive report with complex data tables using `docx.build_document`.
-
----
-
-## The Problem
-When generating reports that exceed 2 pages in Word, naive scripts create tables where:
-- Rows split across the page boundary, cutting text in half.
-- Pages 2, 3, and 4 have no column headers, leaving the reader disoriented.
-
----
-
-## Solution Steps
-
-<Steps>
-1. **Define the Page Setup**:
-   Set standard A4 margins (2.0 cm top/bottom, 2.5 cm left/right).
-
-2. **Structure the Table with Header Protection**:
-   In `DocSpec`, configure `headers: ["Category", "Q1 Actual", "Q2 Budget", "Variance"]` and add row items.
-
-3. **Compile via Docwright**:
-   Invoke `docx.build_document`. The engine automatically injects `<w:cantSplit/>` on all table rows and `<w:tblHeader/>` on header rows.
-</Steps>
-
-### Sample `DocSpec` JSON Payload
+## 1. Prepare the `DocSpec` Payload (`report_spec.json`)
 
 ```json
 {
+  "output_path": "output/q4_architecture_review.docx",
   "spec": {
-    "title": "Annual Executive Strategy Review",
     "page_setup": {
       "orientation": "portrait",
       "margin_top_cm": 2.0,
       "margin_bottom_cm": 2.0,
       "margin_left_cm": 2.5,
-      "margin_right_cm": 2.5
+      "margin_right_cm": 2.0
     },
+    "default_font_name": "Times New Roman",
+    "default_font_size_pt": 11,
     "blocks": [
       {
         "type": "heading",
         "level": 1,
-        "text": "Division Performance Summary"
+        "text": "Q4 Architecture & Security Review"
+      },
+      {
+        "type": "paragraph",
+        "text": "Summary of platform deliverables and verification status across engineering teams.",
+        "space_after_pt": 8
       },
       {
         "type": "table",
-        "headers": ["Business Unit", "Target ($M)", "Delivered ($M)", "Status"],
-        "col_widths": [0.35, 0.20, 0.20, 0.25],
+        "col_widths_cm": [2.0, 5.5, 4.0, 5.0],
+        "header_rows": 1,
         "rows": [
-          ["Enterprise Cloud Services", "120.0", "134.5", "Exceeded"],
-          ["AI Infrastructure Core", "85.0", "98.2", "Exceeded"],
-          ["Cybersecurity Operations", "45.0", "44.1", "On Track"]
+          ["ID", "Deliverable", "Owner", "Verification Status"],
+          ["ARC-01", "Binary C-Extension Packaging", "Platform Team", "Passed (0 leaked sources)"],
+          ["ARC-02", "Multi-Page Table Pagination Engine", "DOCX Core", "Passed (Headers repeat cleanly)"],
+          ["ARC-03", "2D Block Formula AST Shifter", "XLSX Core", "Passed (SUM ranges updated)"]
         ]
       }
     ]
-  },
-  "output_path": "output/annual_strategy_review.docx"
+  }
 }
 ```
 
-### Result
+## 2. Run via CLI or Python SDK
 
-Word automatically repeats column headers at the top of every subsequent page, and table rows never tear across page boundaries.
+```bash
+# Option A: CLI Execution
+docwright docx.build_document --spec report_spec.json
+docwright docx.validate --json '{"file_ref": "output/q4_architecture_review.docx"}'
+```
 
-![Multi-page Clean Report Preview](/images/placeholders/word-report.jpg)
+```python
+# Option B: Python SDK Execution
+import json
+from doctools.operations.docx import docx_build_document, docx_validate
+
+payload = json.loads(open("report_spec.json", encoding="utf-8").read())
+build_res = docx_build_document(**payload)
+val_res = docx_validate(file_ref="output/q4_architecture_review.docx")
+print("Success:", build_res.success and val_res.success)
+```

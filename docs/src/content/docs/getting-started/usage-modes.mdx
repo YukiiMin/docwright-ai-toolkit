@@ -1,0 +1,108 @@
+---
+title: 3 Usage Modes (MCP, Python SDK, CLI)
+description: How to use Docwright via Direct MCP Server calls, Python SDK library imports, or CLI terminal commands.
+---
+
+Docwright is designed so that **AI agents**, **Python backend developers**, and **CI/CD scripts** can all access the exact same 51 tools through three interchangeable interfaces.
+
+![Docwright 3 Usage Modes](/images/diagrams/architecture-overview.svg)
+
+---
+
+## Mode 1: Direct MCP Server Invocation (For AI Agents)
+
+When `docwright-mcp` is connected to your AI IDE (Cursor, Claude Code, Antigravity, Windsurf), all 51 tools are automatically exposed to the model. Both dotted names (`docx.build_document`) and underscore aliases (`docx_build_document`) are accepted.
+
+**Example MCP Tool Call Payload (`docx_patch`):**
+
+```json
+{
+  "file_ref": "contracts/master_service_agreement.docx",
+  "output_path": "contracts/msa_signed.docx",
+  "patches": [
+    {
+      "target_text": "{{CLIENT_NAME}}",
+      "replacement_text": "Acme Global Holdings Ltd."
+    }
+  ]
+}
+```
+
+---
+
+## Mode 2: Python SDK Import (`doctools.api` & `doctools.operations`)
+
+You can import Docwright directly as a Python library in your own scripts, FastAPI backends, or data pipelines.
+
+### A. Calling Any of the 51 Tools in Python
+
+Every tool in `docx.*`, `xlsx.*`, and `common.*` is importable from `doctools.operations`:
+
+```python
+from doctools.operations.docx import docx_build_document, docx_validate
+from doctools.operations.xlsx import xlsx_inspect, xlsx_mutate_block, xlsx_validate
+
+# 1. Inspect an Excel workbook
+info = xlsx_inspect(file_ref="data/quarterly_budget.xlsx")
+print("Sheets:", info.result["sheets"])
+
+# 2. Insert a 2D block of rows and automatically shift downstream formulas
+mut_res = xlsx_mutate_block(
+    file_ref="data/quarterly_budget.xlsx",
+    output_path="data/quarterly_budget_updated.xlsx",
+    sheet_name="Summary",
+    operation="insert_rows",
+    start_row=5,
+    count=2,
+    data=[
+        ["AI Infrastructure", 1500, 1800],
+        ["Security Compliance", 800, 950],
+    ],
+)
+print("Mutation success:", mut_res.success)
+```
+
+### B. Using the High-Level Faithful Spreadsheet SDK (`doctools.api`)
+
+For rapid reading, table extraction, and token compaction in Python:
+
+```python
+from doctools.api import (
+    load_workbook_model,
+    read_table,
+    get_key_values_by_labels,
+    TableIslandDetector,
+    compact_json,
+)
+
+# Load faithful workbook model (preserves formulas, merged ranges, styles)
+wb_model = load_workbook_model("data/financials.xlsx")
+
+# Extract structured records from a sheet table
+records = read_table(wb_model, sheet="Revenue", header_row=2)
+
+# Detect multiple independent 2D tables on a single sheet
+islands = TableIslandDetector.detect_sheet_islands(wb_model.sheets["Revenue"])
+for island in islands:
+    print(island.table_id, island.bounding_box, island.headers)
+```
+
+---
+
+## Mode 3: Unified CLI Dispatcher (`docwright`)
+
+Use the `docwright` (or `doctools`) CLI in terminal sessions, shell scripts, or CI/CD workflows:
+
+```bash
+# 1. Discover tools and inspect schemas
+docwright list
+docwright schema xlsx.semantic_extract
+
+# 2. Execute any tool using a JSON spec file or inline --json string
+docwright docx.validate --json '{"file_ref": "output/report.docx"}'
+docwright xlsx.mutate_block --spec specs/insert_rows.json
+
+# 3. Built-in CLI utilities for fast token compaction & profile scaffolding
+docwright compact-json large_extracted_model.json --path sheets.Summary --max-depth 3 -o compact.json
+docwright profile-scaffold template.xlsx --output template_profile.yaml
+```

@@ -1,0 +1,41 @@
+---
+title: Changelog & Release Notes
+description: Version history, new features, and improvements in Docwright AI Toolkits.
+---
+
+## v1.0.2 (2026-10-16)
+
+### Highlights
+- **Official Brand Identity & Logo**: Integrated the official Docwright AI Toolkits icon as the project's primary avatar, favicon, and documentation hero graphic.
+- **Live Vercel Documentation Deployment**: Official documentation portal deployed live at [https://docwright-ai-toolkit.vercel.app/](https://docwright-ai-toolkit.vercel.app/) with instant offline Pagefind search and dark/light mode.
+- **Enhanced CTAs & Quick Install Banners**: Added one-click copyable installation commands (`pip install docwright-ai-toolkit`) and quickstart action buttons across documentation entrypoints.
+- **Zero-Disparagement & Clean Scope Guarantee**: Completely removed competitive comparisons and unbuilt modules; focused strictly on the 51 active tools across Word and Excel engineering.
+
+---
+
+## v1.0.1 (2026-10-16)
+
+### Highlights
+- **PyPI Rich Markdown Documentation**: Embedded full Markdown documentation and absolute GitHub configuration links directly into the published wheel metadata (`twine check` 100% passed).
+- **Complete 51-Tool Documentation Portal**: Launched bilingual (`EN` / `VI`) Astro Starlight documentation site with offline Pagefind search, SVG architecture & workflow diagrams, and full parameter schemas for all **19 `docx.*` tools**, **31 `xlsx.*` tools**, and **1 `common.*` tool**.
+- **3 Unified Usage Modes Documented**: Added complete guides and examples for **Direct MCP Server (`docwright-mcp`)**, **Python SDK (`doctools.api` & `doctools.operations`)**, and **Unified CLI (`docwright`)**.
+- **1-Click AI IDE Configurations**: Added ready-to-use configuration files and SVG visual guides for Claude Code, Cursor, Google Antigravity, Claude Desktop, Windsurf, OpenAI Codex CLI, and Continue/Cline/Zed.
+
+---
+
+## v1.0.0 (2026-10-15)
+
+### Initial Release
+- **Protected Binary Engine + Open Contract Architecture**: Compiled 111 core engine modules into native C-Extensions (`.pyd`) while keeping 18 Pydantic contract and CLI/MCP entrypoint files open for AI schema inspection.
+- **Word (`docx.*`) Module (19 Tools)**:
+  - `DocSpec` programmatic document builder with ECMA-376 canonical element ordering.
+  - Multi-page table pagination protection (repeating headers, zero split rows, anti-orphan section banners).
+  - Jinja2 template run healer (`docx.normalize_template`) and renderer (`docx.render_template`).
+  - Style-preserving surgical run patcher (`docx.patch`).
+  - Scanned PDF to 1:1 editable Word reconstruction pipeline (`docx.measure_pdf_layout`, `docx.populate_layout_text`, `docx.compile_layout_spec`).
+- **Spreadsheet (`xlsx.*`) Module (31 Tools)**:
+  - 3-tier faithful workbook extraction and slice querying (`xlsx.extract`, `xlsx.query`, `xlsx.semantic_extract`).
+  - 2D Table Island detector (`xlsx.detect_tables`) and block mutator (`xlsx.mutate_block`, `xlsx.shift_block`) with automatic AST formula range shifting.
+  - Headless LibreOffice formula cache recalculation (`xlsx.recalc`) and 13 automated quality checks (`xlsx.validate`).
+- **Common Utilities (`common.*`) (1 Tool)**:
+  - `common.compact_json` for token-saving JSON minification and sub-path extraction.

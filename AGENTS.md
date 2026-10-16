@@ -1,68 +1,53 @@
 # AGENTS.md — Universal Agent Operations Guide for Docwright AI Toolkits
 
-> **Target Audience**: AI Agents, Code Assistants (Claude Code, Cursor, Windsurf, Codex, Antigravity, Roo Code, Cline), and Automated CI/CD Runners.  
+> **Target Audience**: AI Agents, Code Assistants (Claude Code, Cursor, Windsurf, Codex, Antigravity, Roo Code, Cline), Python Developers, and Automated CI/CD Runners.  
 > **Package**: `docwright-ai-toolkit`  
-> **Executable**: `docwright` (CLI) & `docwright-mcp` (Model Context Protocol STDIO Server)
+> **Executables**: `docwright` (Unified CLI) & `docwright-mcp` (Model Context Protocol STDIO Server)  
+> **Python SDK**: `from doctools.api import ...` and `from doctools.operations import ...`
 
 ---
 
-## 1. Operating Mental Model
+## 1. Three Ways to Use Docwright (51 Registered Tools)
 
-You have access to **Docwright AI Toolkits**, an industrial-grade engine designed to eliminate corruption in Word (`.docx`), Excel (`.xlsx`), and Diagrams (`.drawio`).
+**Docwright AI Toolkits** provides **51 schema-validated tools** across **2 core document modules** (`docx.*` — 19 tools, `xlsx.*` — 31 tools) and **1 utility module** (`common.compact_json` — 1 tool).
 
-### The Cardinal Rule (No Ad-Hoc Scripts)
-**NEVER** write or run unmanaged raw library scripts (`python -c "import openpyxl..."`, `python -c "import docx..."`). Raw scripts bypass OpenXML tag order validation, strip DrawingML corporate logos, disrupt cell merge topologies, and break Excel calculation chains.
-
-All document and diagram modifications **MUST** route through:
-1. **Tier 1 (Preferred)**: MCP Tool Calls (`docx.*`, `xlsx.*`, `diagram.*`).
-2. **Tier 2 (CLI Alternative)**: `docwright <tool_name> --spec <spec.json>`.
-
----
-
-## 2. Tool Discovery & Self-Inspection
-
-If you need to discover available capabilities or examine required arguments, execute:
-
-```bash
-# List all 51 registered tools across DOCX, XLSX, and DIAGRAM
-docwright list
-
-# Inspect exact Pydantic schema, parameter types, and docstrings
-docwright schema docx.build_document
-docwright schema xlsx.mutate_block
-docwright schema xlsx.validate
-```
+1. **Mode 1 — Direct MCP Server (`docwright-mcp`)**: Invoke any of the 51 tools directly as MCP tool calls (`docx.*` / `docx_*`, `xlsx.*` / `xlsx_*`, `common.compact_json`).
+2. **Mode 2 — Python SDK Import (`doctools.api` & `doctools.operations`)**: Import tools and high-level faithful data models directly in Python scripts (`from doctools.api import load_workbook_model, read_table, xlsx_mutate_block` or `from doctools.operations.docx import docx_build_document`).
+3. **Mode 3 — Unified CLI Dispatcher (`docwright`)**: Run tools and built-in utilities from the terminal:
+   ```bash
+   docwright list
+   docwright schema docx.build_document
+   docwright docx.build_document --spec payload.json
+   docwright compact-json large_data.json --path tables.0 -o compact.json
+   docwright profile-scaffold workbook.xlsx --output profile.yaml
+   ```
 
 ---
 
-## 3. Core Execution Invariants
+## 2. Core Workflows & Best Practices
 
-### Word Processing (`docx.*`)
-- **The Last Paragraph Invariant**: Every table cell (`<w:tc>`) MUST terminate with at least one `<w:p>`. Empty cells corrupt Word documents.
-- **Table Integrity**: Multi-page tables must include `<w:cantSplit/>` on data rows and `<w:tblHeader/>` on header rows.
-- **Surgical Run Splicing**: Mutate text within runs without destroying font styling, bold/italic, color, or paragraph margins.
+### Word Document Engineering (`docx.*` — 19 Tools)
+- **Programmatic Generation (`docx.build_document`)**: Build multi-page `.docx` documents from a structured `DocSpec` JSON payload with automatic repeating table headers and row-split protection.
+- **Jinja2 Template Rendering (`docx.normalize_template` -> `docx.render_template`)**: Consolidate split `{{ variable }}` tags across XML runs first, then inject JSON context while preserving corporate styles, headers, and footers.
+- **Surgical Text Patching (`docx.patch`)**: Replace text inside existing documents while preserving original run font, size, color, and bold/italic formatting.
+- **1:1 Scanned PDF Reconstruction (`docx.measure_pdf_layout` -> `docx.populate_layout_text` -> `docx.compile_layout_spec`)**: Measure table grid geometry from scanned PDFs, populate text by `cell_id` (`c0_0`), and compile into an editable Word document.
+- **Validation (`docx.validate`)**: Verify OpenXML schema element ordering, table pagination locks, printable margins, and leftover placeholders.
 
-### Spreadsheet Engineering (`xlsx.*`)
-- **2D Block Mutation**: Use `xlsx.mutate_block` to insert or shift rows/columns. It automatically adjusts formula coordinate references using AST tokenization.
-- **DrawingML Shield**: Never resave workbooks using blank templates; preserve existing logos, shapes, and charts.
-- **13 Universal Gates (`UG-01..13`)**: Every spreadsheet operation automatically verifies against structural gates (zero formula breakage, no merged-cell corruption, no style stripping).
-
-### Technical Diagrams (`diagram.*`)
-- **Pure Native Hierarchy**: All nodes and edges must be native `<mxCell>` elements inside a clean `mxGraphModel`. No raster hacks or embedded Markdown wrappers.
-- **Orthogonal Routing**: Use `edgeStyle=orthogonalEdgeStyle;` with standard anchor ports (`0.0`, `0.5`, `1.0`).
+### Spreadsheet Engineering (`xlsx.*` — 31 Tools)
+- **3-Tier Faithful Reading (`xlsx.preflight` -> `xlsx.extract` -> `xlsx.query`)**: Inspect workbook structure and query targeted slices without overflowing LLM context windows.
+- **2D Table Island Detection & Block Mutation (`xlsx.detect_tables` -> `xlsx.mutate_block`)**: Detect multiple independent tables on a single sheet, insert rows/columns, clone template row styles, and automatically shift downstream `=SUM(...)` and KPI formulas via AST parsing.
+- **Recalculation & Quality Verification (`xlsx.recalc` -> `xlsx.validate`)**: Refresh cached formula evaluation values via headless LibreOffice and verify formula integrity, merged-cell borders, and embedded logos/shapes.
 
 ---
 
-## 4. Universal Configuration Reference
+## 3. Universal Configuration Reference
 
-| AI Agent / IDE | Configuration Path | Command |
-|---|---|---|
-| **Cursor IDE** | `.cursor/mcp.json` | `docwright-mcp` |
-| **Claude Desktop** | `claude_desktop_config.json` | `docwright-mcp` |
+| AI Agent / IDE | Configuration Path / Command | Server Entrypoint |
+| :--- | :--- | :--- |
 | **Claude Code CLI** | `claude mcp add docwright -- docwright-mcp` | `docwright-mcp` |
-| **Windsurf / Codeium** | `~/.codeium/windsurf/mcp_config.json` | `docwright-mcp` |
+| **Cursor IDE** | `.cursor/mcp.json` | `docwright-mcp` |
 | **Google Antigravity** | `.agents/mcp_config.json` | `docwright-mcp` |
+| **Claude Desktop** | `claude_desktop_config.json` | `docwright-mcp` |
+| **Windsurf / Codeium** | `~/.codeium/windsurf/mcp_config.json` | `docwright-mcp` |
 | **Codex CLI / Shell Agents** | Direct Terminal CLI | `docwright <tool> --spec <file>` |
-| **Continue.dev** | `.continue/config.json` | `docwright-mcp` |
-| **Zed Editor** | `settings.json` (`context_servers`) | `docwright-mcp` |
-| **Cline / Roo Code** | MCP Settings Panel | `docwright-mcp` |
+| **Continue.dev / Zed / Cline** | Standard MCP settings | `docwright-mcp` |

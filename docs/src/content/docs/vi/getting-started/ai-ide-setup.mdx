@@ -1,0 +1,102 @@
+---
+title: Cài Đặt 1-Click Cho AI IDE & Agent
+description: Kết nối máy chủ MCP Docwright vào Claude Code, Cursor, Google Antigravity, Claude Desktop, Windsurf và OpenAI Codex CLI.
+---
+
+Tất cả các trình lập trình AI đều kết nối tới cùng một lệnh máy chủ chuẩn (`docwright-mcp`) hoặc lệnh CLI (`docwright`).
+
+---
+
+## <img src="/images/icons/claude-code.svg" alt="Claude Code" width="28" height="28" style="vertical-align: middle; margin-right: 8px;" /> 1. Claude Code (Anthropic CLI)
+
+Chạy lệnh đăng ký trực tiếp trên Terminal:
+
+```bash
+claude mcp add docwright -- docwright-mcp
+```
+
+---
+
+## <img src="/images/icons/cursor.svg" alt="Cursor" width="28" height="28" style="vertical-align: middle; margin-right: 8px;" /> 2. Cursor IDE
+
+Thêm vào file `.cursor/mcp.json` tại thư mục gốc dự án:
+
+```json
+{
+  "mcpServers": {
+    "docwright": {
+      "command": "docwright-mcp",
+      "args": []
+    }
+  }
+}
+```
+
+---
+
+## <img src="/images/icons/antigravity.svg" alt="Google Antigravity" width="28" height="28" style="vertical-align: middle; margin-right: 8px;" /> 3. Google Antigravity IDE
+
+Thêm vào `.agents/mcp_config.json` trong dự án hoặc `~/.gemini/config/mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "docwright": {
+      "command": "docwright-mcp",
+      "args": []
+    }
+  }
+}
+```
+
+---
+
+## <img src="/images/icons/claude-desktop.svg" alt="Claude Desktop" width="28" height="28" style="vertical-align: middle; margin-right: 8px;" /> 4. Claude Desktop App
+
+Thêm vào `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "docwright": {
+      "command": "docwright-mcp",
+      "args": []
+    }
+  }
+}
+```
+
+---
+
+## <img src="/images/icons/windsurf.svg" alt="Windsurf" width="28" height="28" style="vertical-align: middle; margin-right: 8px;" /> 5. Windsurf IDE
+
+Thêm vào `~/.codeium/windsurf/mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "docwright": {
+      "command": "docwright-mcp",
+      "args": []
+    }
+  }
+}
+```
+
+---
+
+## <img src="/images/icons/openai-codex.svg" alt="OpenAI Codex CLI" width="28" height="28" style="vertical-align: middle; margin-right: 8px;" /> 6. OpenAI Codex CLI / Shell Agents
+
+Các tác nhân chạy trên Terminal có thể gọi trực tiếp qua CLI:
+
+```bash
+docwright list
+docwright schema xlsx.mutate_block
+docwright docx.build_document --spec spec.json
+```
+
+---
+
+## <img src="/images/icons/mcp-universal.svg" alt="Universal MCP" width="28" height="28" style="vertical-align: middle; margin-right: 8px;" /> 7. Continue.dev, Cline, Roo Code & Zed
+
+Sử dụng cấu hình stdio tiêu chuẩn `"command": "docwright-mcp"` với `"args": []`. Toàn bộ file cấu hình mẫu có sẵn tại thư mục [`configs/`](https://github.com/YukiiMin/docwright-ai-toolkit/tree/main/configs) trên GitHub.

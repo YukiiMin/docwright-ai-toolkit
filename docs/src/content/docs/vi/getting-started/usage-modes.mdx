@@ -1,0 +1,104 @@
+---
+title: 3 Phương Thức Sử Dụng (MCP, Python SDK, CLI)
+description: Hướng dẫn toàn diện cách gọi trực tiếp qua MCP Server, import bộ thư viện Python SDK (doctools.api), hoặc chạy lệnh CLI.
+---
+
+Docwright hỗ trợ đồng thời **3 phương thức vận hành** để bạn linh hoạt sử dụng từ AI Agent, nhúng vào mã nguồn Python, hoặc chạy nhanh trên dòng lệnh Terminal.
+
+![3 Phương thức sử dụng Docwright](/images/diagrams/architecture-overview.svg)
+
+---
+
+## Phương Thức 1: Gọi Trực Tiếp Qua MCP Server (Dành Cho AI Agent)
+
+Khi kết nối `docwright-mcp` vào AI IDE (Cursor, Claude Code, Antigravity, Windsurf), toàn bộ 51 công cụ sẽ xuất hiện sẵn trong danh sách tool của AI. Bạn có thể giao việc bằng ngôn ngữ tự nhiên hoặc chỉ định rõ tên tool (`docx.build_document` / `docx_build_document`).
+
+**Ví dụ Payload Khi AI Gọi MCP Tool (`docx_patch`):**
+
+```json
+{
+  "file_ref": "contracts/hop_dong_dich_vu.docx",
+  "output_path": "contracts/hop_dong_da_ky.docx",
+  "patches": [
+    {
+      "target_text": "{{TEN_KHACH_HANG}}",
+      "replacement_text": "Công ty Cổ phần Công nghệ Á Châu"
+    }
+  ]
+}
+```
+
+---
+
+## Phương Thức 2: Import Bộ Thư Viện Python SDK (`doctools.api` & `doctools.operations`)
+
+Khi bạn viết ứng dụng Python, dịch vụ backend (FastAPI/Django) hoặc script xử lý dữ liệu hàng loạt, hãy `import` trực tiếp bộ thư viện của Docwright.
+
+### A. Gọi Trực Tiếp 51 Công Cụ Từ `doctools.operations`
+
+```python
+from doctools.operations.docx import docx_build_document, docx_validate
+from doctools.operations.xlsx import xlsx_inspect, xlsx_mutate_block, xlsx_validate
+
+# 1. Khảo sát nhanh cấu trúc file Excel
+info = xlsx_inspect(file_ref="data/ngan_sach_quy.xlsx")
+print("Danh sách sheet:", info.result["sheets"])
+
+# 2. Chèn 2 dòng dữ liệu mới và tự động mở rộng công thức =SUM(...)
+mut_res = xlsx_mutate_block(
+    file_ref="data/ngan_sach_quy.xlsx",
+    output_path="data/ngan_sach_quy_cap_nhat.xlsx",
+    sheet_name="Summary",
+    operation="insert_rows",
+    start_row=5,
+    count=2,
+    data=[
+        ["Hạ tầng máy chủ AI", 1500, 1800],
+        ["Kiểm toán bảo mật", 800, 950],
+    ],
+)
+print("Trạng thái cập nhật:", mut_res.success)
+```
+
+### B. Sử Dụng Bộ Hàm Đọc & Phân Tích Cao Cấp (`doctools.api`)
+
+```python
+from doctools.api import (
+    load_workbook_model,
+    read_table,
+    get_key_values_by_labels,
+    TableIslandDetector,
+    compact_json,
+)
+
+# Nạp mô hình bảng tính trung thực (giữ nguyên công thức, vùng gộp ô, định dạng)
+wb_model = load_workbook_model("data/bao_cao_tai_chinh.xlsx")
+
+# Đọc bảng dữ liệu thành danh sách dictionary chuẩn
+records = read_table(wb_model, sheet="Revenue", header_row=2)
+
+# Tự động nhận diện các bảng độc lập (Table Islands) trên cùng 1 sheet
+islands = TableIslandDetector.detect_sheet_islands(wb_model.sheets["Revenue"])
+for island in islands:
+    print(island.table_id, island.bounding_box, island.headers)
+```
+
+---
+
+## Phương Thức 3: Chạy Lệnh CLI Nhanh (`docwright`)
+
+Dành cho việc kiểm tra nhanh trên Terminal, viết bash/PowerShell script hoặc tích hợp CI/CD:
+
+```bash
+# 1. Tra cứu danh sách tool và xem cấu trúc JSON schema
+docwright list
+docwright schema xlsx.semantic_extract
+
+# 2. Chạy bất kỳ công cụ nào bằng chuỗi --json hoặc file --spec
+docwright docx.validate --json '{"file_ref": "output/bao_cao.docx"}'
+docwright xlsx.mutate_block --spec specs/insert_rows.json
+
+# 3. Lệnh tiện ích nén gọn JSON tiết kiệm token & khởi tạo Profile YAML
+docwright compact-json large_model.json --path sheets.Summary --max-depth 3 -o compact.json
+docwright profile-scaffold template.xlsx --output template_profile.yaml
+```

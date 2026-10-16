@@ -4,11 +4,15 @@ import starlight from '@astrojs/starlight';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://docwright.dev',
+	site: 'https://docwright-ai-toolkit.vercel.app',
 	integrations: [
 		starlight({
 			title: 'Docwright AI Toolkits',
-			description: 'The AI-Native Office & Diagram Toolkit Plugin for AI Agents (Word, Excel, Technical Diagrams)',
+			description: 'Deterministic Word (DOCX) and Excel (XLSX) Engineering Toolkit for AI Agents, Python SDK, and CLI',
+			logo: {
+				src: './src/assets/logo.png',
+			},
+			favicon: '/images/docwright-ai-toolkit-icon.png',
 			defaultLocale: 'root',
 			locales: {
 				root: {
@@ -26,46 +30,55 @@ export default defineConfig({
 			sidebar: [
 				{
 					label: 'Getting Started',
+					translations: { vi: 'Bắt Đầu Nhanh' },
 					items: [
-						{ label: 'Introduction', slug: 'getting-started' },
-						{ label: 'Why AI Fails at Docs', slug: 'getting-started/why-ai-fails' },
-						{ label: 'Installation', slug: 'getting-started/installation' },
-						{ label: '1-Click AI IDE Setup', slug: 'getting-started/ai-ide-setup' },
-						{ label: '5-Layer Architecture', slug: 'getting-started/architecture' },
+						{ label: 'Quickstart Guide', translations: { vi: 'Hướng Dẫn Nhanh' }, slug: 'getting-started' },
+						{ label: 'Installation & Setup', translations: { vi: 'Cài Đặt Môi Trường' }, slug: 'getting-started/installation' },
+						{ label: '1-Click AI IDE Setup', translations: { vi: 'Cài Đặt 1-Click AI IDE' }, slug: 'getting-started/ai-ide-setup' },
+						{ label: '3 Usage Modes (MCP / SDK / CLI)', translations: { vi: '3 Phương Thức Sử Dụng' }, slug: 'getting-started/usage-modes' },
+						{ label: 'Architecture & Modules', translations: { vi: 'Kiến Trúc & Mô-đun' }, slug: 'getting-started/architecture' },
 					],
 				},
 				{
-					label: 'Domain Guides',
+					label: 'Core Modules',
+					translations: { vi: 'Mô-đun Cốt Lõi' },
 					items: [
-						{ label: 'Word (DOCX) Engine', slug: 'domain-guides/word-docx' },
-						{ label: 'Spreadsheets (XLSX) Engine', slug: 'domain-guides/excel-xlsx' },
-						{ label: 'Technical Diagrams (Draw.io)', slug: 'domain-guides/diagram-drawio' },
+						{ label: 'Word (docx.* — 19 Tools)', translations: { vi: 'Mô-đun Word (docx.*)' }, slug: 'domain-guides/word-docx' },
+						{ label: 'Excel (xlsx.* — 31 Tools)', translations: { vi: 'Mô-đun Excel (xlsx.*)' }, slug: 'domain-guides/excel-xlsx' },
 					],
 				},
 				{
-					label: 'Tool Reference (51 Tools)',
+					label: 'Tool & SDK Reference (51 Tools)',
+					translations: { vi: 'Tham Chiếu 51 Công Cụ & SDK' },
 					items: [
-						{ label: 'Catalog Overview', slug: 'reference' },
-						{ label: 'Word Tools (docx.*)', slug: 'reference/docx-tools' },
-						{ label: 'Spreadsheet Tools (xlsx.*)', slug: 'reference/xlsx-tools' },
-						{ label: 'Diagram Tools (diagram.*)', slug: 'reference/diagram-tools' },
+						{ label: 'Complete 51-Tool Catalog', translations: { vi: 'Tổng Quan 51 Công Cụ' }, slug: 'reference' },
+						{ label: 'Word Tools (docx.*)', translations: { vi: 'Công Cụ Word (docx.*)' }, slug: 'reference/docx-tools' },
+						{ label: 'Spreadsheet Tools (xlsx.*)', translations: { vi: 'Công Cụ Excel (xlsx.*)' }, slug: 'reference/xlsx-tools' },
+						{ label: 'Common, CLI & Python SDK', translations: { vi: 'Tiện Ích Chung, CLI & SDK' }, slug: 'reference/common-and-sdk' },
 					],
 				},
 				{
-					label: 'Enterprise Cookbooks',
+					label: 'Cookbooks & Workflows',
+					translations: { vi: 'Kịch Bản Thực Chiến' },
 					items: [
-						{ label: 'Multi-Page Executive Report', slug: 'cookbooks/multi-page-report' },
-						{ label: '1:1 Scanned PDF Reconstruction', slug: 'cookbooks/scanned-pdf-to-docx' },
-						{ label: 'Safe Spreadsheet 2D Mutation', slug: 'cookbooks/spreadsheet-mutation' },
-						{ label: 'Microservice Diagram Generation', slug: 'cookbooks/cloud-architecture' },
+						{ label: 'Multi-Page Executive Report', translations: { vi: 'Xuất Báo Cáo Nhiều Trang' }, slug: 'cookbooks/multi-page-report' },
+						{ label: 'Scanned PDF to 1:1 Word Form', translations: { vi: 'Tái Tạo Biểu Mẫu Từ PDF Scan' }, slug: 'cookbooks/scanned-pdf-to-docx' },
+						{ label: 'Safe 2D Spreadsheet Mutation', translations: { vi: 'Chèn Khối & Dịch Công Thức Excel' }, slug: 'cookbooks/spreadsheet-mutation' },
 					],
 				},
 				{
-					label: 'Quality Gates & Diagnostics',
+					label: 'Quality Verification',
+					translations: { vi: 'Kiểm Định Chất Lượng' },
 					items: [
-						{ label: '13 Universal Gates (UG-01..13)', slug: 'quality-gates/universal-gates' },
-						{ label: 'OpenXML Error Invariants', slug: 'quality-gates/openxml-invariants' },
-						{ label: 'Fail-Closed Diagnostics', slug: 'quality-gates/fail-closed' },
+						{ label: 'Automated Quality Gates', translations: { vi: 'Cổng Kiểm Định Tự Động' }, slug: 'quality-gates/universal-gates' },
+						{ label: 'Structured Diagnostics', translations: { vi: 'Chẩn Đoán Lỗi Cấu Trúc' }, slug: 'quality-gates/fail-closed' },
+					],
+				},
+				{
+					label: 'Changelog',
+					translations: { vi: 'Nhật Ký Phiên Bản' },
+					items: [
+						{ label: 'Release Notes (v1.0.2)', translations: { vi: 'Lịch Sử Cập Nhật (v1.0.2)' }, slug: 'changelog' },
 					],
 				},
 			],

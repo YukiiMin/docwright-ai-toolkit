@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "docwright-ai-toolkit"
-version = "1.0.1"
-description = "The AI-Native Office & Diagram Toolkit Plugin for AI Agents (Word, Excel, Technical Diagrams)"
+version = "1.0.2"
+description = "Deterministic Word (DOCX) and Excel (XLSX) Engineering Toolkit for AI Agents, Python SDK, and CLI"
 readme = "README.md"
 authors = [{ name = "YukiiMin" }]
 license = { text = "BSL-1.1" }
@@ -15,7 +15,7 @@ keywords = [
     "ai-agents",
     "docx",
     "xlsx",
-    "diagram",
+    "python-sdk",
     "cursor",
     "claude",
     "windsurf",
@@ -46,7 +46,7 @@ docwright-mcp = "doctools.mcp_server:main"
 Homepage = "https://github.com/YukiiMin/docwright-ai-toolkit"
 Repository = "https://github.com/YukiiMin/docwright-ai-toolkit"
 Issues = "https://github.com/YukiiMin/docwright-ai-toolkit/issues"
-Documentation = "https://github.com/YukiiMin/docwright-ai-toolkit#readme"
+Documentation = "https://docwright-ai-toolkit.vercel.app/"
 
 [tool.setuptools.packages.find]
 where = ["."]

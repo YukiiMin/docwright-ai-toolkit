@@ -1,40 +1,47 @@
 ---
 title: Docwright AI Toolkits
-description: Bộ công cụ AI-Native xử lý văn phòng và sơ đồ dành riêng cho AI Agents.
+description: Bộ Công Cụ Kỹ Thuật Tài Liệu Word (DOCX) và Bảng Tính Excel (XLSX) Chuẩn Xác Cho AI Agents, Lập Trình Viên Python & CLI.
 template: splash
 hero:
-  tagline: Đảm bảo toàn vẹn cấu trúc, bảo toàn định dạng và chống hỏng tệp 100% cho Word, Excel và Sơ đồ kỹ thuật.
+  tagline: Khởi tạo, trích xuất, chỉnh sửa và kiểm định tài liệu Word & bảng tính Excel thông qua 51 công cụ chuẩn hóa — gọi trực tiếp qua MCP Server, import thư viện Python SDK, hoặc chạy CLI.
   image:
-    file: ../../../assets/architecture-5-layer.svg
+    file: ../../../assets/logo.png
   actions:
-    - text: Bắt đầu ngay
+    - text: Hướng Dẫn Bắt Đầu
       link: /vi/getting-started/
       icon: right-arrow
-      variant: primary
-    - text: Cấu hình AI IDE 1-Click
-      link: /vi/getting-started/ai-ide-setup/
-      icon: external
+    - text: Cài Đặt Môi Trường
+      link: /vi/getting-started/installation/
+      icon: seti:shell
       variant: secondary
-    - text: Xem trên GitHub
-      link: https://github.com/YukiiMin/docwright-ai-toolkit
-      icon: github
+    - text: Danh Mục 51 Công Cụ
+      link: /vi/reference/
+      icon: external
+      variant: minimal
 ---
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-## Khả năng cốt lõi
+<div style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 10px; padding: 14px 20px; margin: 1.5rem 0 2rem 0; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.95rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+  <span><strong>Cài đặt nhanh:</strong> <code>pip install docwright-ai-toolkit</code></span>
+  <span><strong>Trang tài liệu trực tuyến:</strong> <a href="https://docwright-ai-toolkit.vercel.app/" target="_blank">docwright-ai-toolkit.vercel.app</a></span>
+</div>
+
+## Kiến Trúc & 3 Phương Thức Sử Dụng
+
+![Tổng quan Kiến trúc Docwright](/images/diagrams/architecture-overview.svg)
 
 <CardGrid stagger>
-  <Card title="Động cơ Word (DOCX)" icon="document">
-    **Chuẩn hóa OpenXML ECMA-376**, khóa `<w:cantSplit/>` chống rách hàng qua trang, tự động lặp tiêu đề `<w:tblHeader/>`, và bộ ghép run phẫu thuật chống mất style.
-  </Card>
-  <Card title="Động cơ Bảng tính (XLSX)" icon="pencil">
-    **Đột biến khối 2D với dịch chuyển công thức AST**, nhận diện ốc đảo bảng (Table Islands), bảo vệ logo DrawingML, và kiểm định qua **13 Cổng phổ quát (`UG-01..13`)**.
-  </Card>
-  <Card title="Sơ đồ kỹ thuật (Draw.io)" icon="seti:graphql">
-    Sinh XML thuần `mxGraphModel` với định tuyến trực giao (Orthogonal routing), tự động co giãn kích thước theo trường, và render PNG/SVG siêu nét.
-  </Card>
-  <Card title="Tích hợp toàn diện mọi AI Agent" icon="laptop">
-    Máy chủ STDIO chuẩn **Model Context Protocol (MCP)** + Điều phối CLI. Cấu hình 1-Click cho Cursor, Claude Code, Google Antigravity, Windsurf, Codex CLI.
-  </Card>
+	<Card title="1. Gọi Trực Tiếp Qua MCP Server" icon="rocket">
+		Kết nối `docwright-mcp` vào Claude Code, Cursor, Google Antigravity, Claude Desktop hoặc Windsurf để AI tự động gọi 51 công cụ xử lý tài liệu.
+	</Card>
+	<Card title="2. Import Thư Viện Python SDK" icon="seti:python">
+		Import trực tiếp `doctools.api` và `doctools.operations` vào dự án Python của bạn để đọc bảng tính, chèn khối 2D tự động dịch công thức và xuất file Word.
+	</Card>
+	<Card title="3. Chạy Lệnh CLI Tốc Độ Cao" icon="terminal">
+		Sử dụng `docwright list`, `docwright schema`, `docwright compact-json` hoặc chạy bất kỳ công cụ nào từ Terminal và CI/CD với mã thoát POSIX chuẩn.
+	</Card>
+	<Card title="51 Công Cụ Thực Chiến" icon="approve-check-circle">
+		Bao gồm **19 công cụ Word (`docx.*`)**, **31 công cụ Excel (`xlsx.*`)**, và **1 công cụ Nén Token (`common.*`)** tích hợp sẵn kiểm định chất lượng.
+	</Card>
 </CardGrid>

@@ -1,22 +1,38 @@
 ---
-title: Giới thiệu tổng quan
-description: Tổng quan về Docwright AI Toolkits và sứ mệnh AI-Native.
+title: Bắt Đầu Nhanh (Quickstart)
+description: Cài đặt Docwright AI Toolkits và vận hành tác vụ Word / Excel đầu tiên chỉ trong 60 giây.
 ---
 
-**Docwright AI Toolkits** (`docwright-ai-toolkit`) là bộ công cụ AI-Native xử lý văn phòng và sơ đồ được thiết kế chuyên biệt cho các mô hình AI lập trình (AI Agents) và kỹ sư phần mềm.
+**Docwright AI Toolkits** (`docwright-ai-toolkit`) là bộ công cụ kỹ thuật chuyên dụng giúp AI Agents và lập trình viên khởi tạo, đọc dữ liệu, chỉnh sửa và kiểm định **tài liệu Word (`.docx`)** cùng **bảng tính Excel (`.xlsx`)** với độ chính xác tuyệt đối về bố cục và công thức.
 
-Bộ công cụ giải quyết triệt để vấn đề xung đột định dạng giữa Large Language Models (LLM) và các tệp văn phòng nhị phân:
-- **Microsoft Word (`.docx`)**
-- **Microsoft Excel (`.xlsx`, `.xls`)**
-- **Sơ đồ kỹ thuật Draw.io (`.drawio`, `mxGraphModel`)**
+## Docwright Giải Quyết Các Bài Toán Gì?
+
+1. **Bảo Toàn Bảng Biểu Nhiều Trang Trên Word**: Tự động khóa hàng không bị cắt đôi giữa chừng khi qua trang mới, tự động lặp lại dòng tiêu đề bảng ở đầu mỗi trang tiếp theo và giữ tiêu đề mục đi liền với dữ liệu.
+2. **Điền Biểu Mẫu Jinja & Vá Văn Bản Giữ Nguyên Định Dạng**: Tự động hàn gắn các thẻ `{{ bien_so }}` bị trình soạn thảo Word cắt vụn và thay thế nội dung văn bản mà vẫn giữ nguyên phông chữ, màu sắc, cỡ chữ của biểu mẫu gốc.
+3. **Tái Tạo Biểu Mẫu Word 1:1 Từ PDF Scan**: Đo đạc chính xác lưới bảng từ file PDF scan bằng thị giác máy tính (`docx.measure_pdf_layout`), điền văn bản theo mã ô (`cell_id`) và biên dịch ra file `.docx` chỉnh sửa được.
+4. **Đọc Excel Tiết Kiệm Token & Chèn Khối 2D Tự Động Dịch Công Thức**: Trích xuất bảng tính lớn thành từng lát cắt nhỏ không làm tràn ngữ cảnh AI, nhận diện nhiều bảng trên cùng một sheet và chèn thêm dòng mới đồng thời tự động mở rộng vùng công thức `=SUM(...)`.
 
 ---
 
-## Vì sao AI thông thường hay làm hỏng tệp văn phòng?
+## Bước 1: Cài Đặt Từ PyPI
 
-Khi các AI Agent (Claude, GPT, Gemini) tự động viết các đoạn mã ngắn bằng `python-docx` hoặc `openpyxl`:
-1. **Vi phạm chuẩn OpenXML ECMA-376**: Bỏ quên đoạn văn `<w:p>` trong ô trống, khiến Microsoft Word hiện thông báo lỗi: *"Word found unreadable content"*.
-2. **Xé rách hàng bảng qua trang**: Bảng không có `<w:cantSplit/>` khiến văn bản bị chẻ đôi giữa 2 trang; thiếu `<w:tblHeader/>` khiến trang sau không có tiêu đề cột.
-3. **Làm hỏng công thức Excel**: Chèn thêm hàng nhưng không dịch chuyển công thức phụ thuộc (`=SUM()`), làm mất logo thương hiệu DrawingML.
+```bash
+pip install docwright-ai-toolkit
+```
 
-Docwright cung cấp một **tầng biên dịch tất định** bảo vệ 100% tệp gốc trước khi lưu.
+## Bước 2: Kiểm Tra Danh Mục 51 Công Cụ
+
+```bash
+# Liệt kê toàn bộ 51 công cụ (19 docx.*, 31 xlsx.*, 1 common.*)
+docwright list
+
+# Xem schema đầu vào và ví dụ mẫu của bất kỳ công cụ nào
+docwright schema docx.build_document
+docwright schema xlsx.mutate_block
+```
+
+## Bước 3: Chọn Phương Thức Tích Hợp
+
+- **[Cài Đặt 1-Click Cho AI IDE](/vi/getting-started/ai-ide-setup/)**: Tích hợp `docwright-mcp` vào Cursor, Claude Code, Antigravity, Windsurf.
+- **[3 Phương Thức Sử Dụng (MCP, Python SDK, CLI)](/vi/getting-started/usage-modes/)**: Hướng dẫn chi tiết cách gọi qua MCP, `import doctools.api` trong code Python, hoặc chạy lệnh CLI.
+- **[Tham Chiếu 51 Công Cụ](/vi/reference/)**: Tra cứu chi tiết từng tham số và ví dụ của toàn bộ 51 công cụ.

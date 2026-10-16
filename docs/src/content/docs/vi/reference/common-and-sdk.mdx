@@ -1,0 +1,93 @@
+---
+title: Công Cụ Chung, Lệnh CLI & Thư Viện Python SDK
+description: Tham chiếu công cụ common.compact_json, các lệnh CLI tích hợp và bộ thư viện Python SDK (doctools.api).
+---
+
+## 1. Công Cụ Tiện Ích Chung (`common.*`)
+
+## `common.compact_json`
+
+Minify and compact JSON file or text for maximum AI token efficiency, with optional path querying and depth limiting.
+
+| Tham số | Kiểu dữ liệu | Bắt buộc | Mô tả |
+| :--- | :--- | :--- | :--- |
+| `json_ref` | `string / object` | **Có** | Path to .json file, FileRef dict/URI, or raw JSON text string. |
+| `json_path` | `string` | **Tùy chọn** | Optional dot/bracket path to isolate a sub-tree (e.g. 'sheets.0.cells' or '$.items'). |
+| `max_depth` | `integer` | **Tùy chọn** | Optional maximum object depth to prevent deep nesting bloat. |
+| `write_file` | `boolean` | **Tùy chọn** | If True, persists compacted JSON to FileStore and returns FileRef. Defaults to False (returns inline string). |
+
+**Ví dụ Gọi Công cụ (MCP / CLI / Python SDK):**
+
+```bash
+# 1. CLI Execution
+docwright common.compact_json --json '{"json_ref": "sample_json_ref.xlsx", "json_path": "sample_json_path.xlsx"}'
+```
+
+```python
+# 2. Python SDK Import
+from doctools.api import common_compact_json
+res = common_compact_json(**{
+  "json_ref": "sample_json_ref.xlsx",
+  "json_path": "sample_json_path.xlsx"
+})
+print(res.success, res.result)
+```
+
+
+---
+
+## 2. Các Lệnh CLI Tích Hợp (`docwright`)
+
+Ngoài việc gọi trực tiếp 51 công cụ, lệnh `docwright` (hoặc `doctools`) cung cấp 5 lệnh tiện ích hệ thống:
+
+| Lệnh CLI | Chức năng | Ví dụ |
+| :--- | :--- | :--- |
+| `docwright list` | Xuất danh mục JSON của toàn bộ 51 công cụ đã đăng ký. | `docwright list` |
+| `docwright schema <tool>` | Xem JSON schema đầu vào và payload mẫu của một công cụ. | `docwright schema docx.build_document` |
+| `docwright mcp` | Khởi chạy máy chủ MCP qua giao thức stdio (`docwright-mcp`). | `docwright mcp` |
+| `docwright compact-json <file>` | Nén gọn file JSON hoặc trích xuất nhánh con giúp tiết kiệm token cho AI. | `docwright compact-json data.json -p tables.0 -o out.json` |
+| `docwright profile-scaffold <xlsx>` | Khởi tạo nhanh file cấu hình profile YAML/JSON từ bảng tính mẫu. | `docwright profile-scaffold report.xlsx --output profile.yaml` |
+
+### Mã Thoát Chuẩn (Exit Codes)
+
+- `0`: Thành công tuyệt đối (`success=True`, không có lỗi hay cảnh báo).
+- `1`: Thành công nhưng có cảnh báo nhẹ (`warnings`).
+- `2`: Vi phạm cổng kiểm định chất lượng hoặc lỗi thực thi (`errors`).
+- `64`: Sai cú pháp dòng lệnh hoặc đường dẫn/JSON không hợp lệ (`EX_USAGE`).
+
+---
+
+## 3. Thư Viện Python SDK (`doctools.api`)
+
+Khi lập trình ứng dụng Python hoặc viết script tự động hóa, bạn có thể `import` trực tiếp từ `doctools.api`:
+
+```python
+from doctools.api import (
+    # Tầng L1: Mô hình bảng tính trung thực
+    load_workbook_model,
+    WorkbookModel,
+    SheetModel,
+    CellModel,
+    # Tầng L2: Hàm đọc bảng và tra cứu nhãn tự động
+    read_table,
+    get_key_values_by_labels,
+    resolve_sheet_name,
+    # Tầng L3: Phân loại bố cục & Khởi tạo Profile
+    LayoutClassifier,
+    ProfileScaffolder,
+    # Nhận diện Đảo Bảng 2D & Chèn Khối tự động dịch công thức
+    TableIslandDetector,
+    BlockMutator,
+    BatchInteractionManager,
+    BulkIngestionEngine,
+    xlsx_detect_tables,
+    xlsx_mutate_block,
+    xlsx_semantic_extract,
+    # Streaming dữ liệu lớn & Nén JSON tiết kiệm Token
+    export_workbook_to_jsonl,
+    query_jsonl_stream,
+    compact_json,
+    compact_json_file,
+    common_compact_json,
+)
+```

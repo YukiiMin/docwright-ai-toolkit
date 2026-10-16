@@ -1,79 +1,30 @@
 ---
-title: Installation
-description: How to install Docwright AI Toolkits via pip, uv, and standalone binaries.
+title: Installation & Environment Setup
+description: System requirements, PyPI package installation, and optional headless LibreOffice setup.
 ---
 
-import { Tabs, TabItem } from '@astrojs/starlight/components';
+## 1. Python & Operating System Requirements
 
-Docwright AI Toolkits can be installed via standard Python package managers or used as a standalone binary executable.
-
----
-
-## 1. Package Installation (Recommended)
-
-Docwright requires **Python >= 3.10**.
-
-<Tabs>
-  <TabItem label="pip">
-    ```bash
-    pip install docwright-ai-toolkit
-    ```
-  </TabItem>
-  <TabItem label="uv">
-    ```bash
-    uv pip install docwright-ai-toolkit
-    ```
-  </TabItem>
-  <TabItem label="poetry">
-    ```bash
-    poetry add docwright-ai-toolkit
-    ```
-  </TabItem>
-</Tabs>
-
-### Verify Installation
-
-Verify the CLI and MCP server are registered on your system:
+- **Python**: `>= 3.10` (Python `3.11`, `3.12`, or `3.13` recommended).
+- **Packages**: Pre-compiled binary wheels are published on PyPI alongside open Pydantic contract schemas.
 
 ```bash
-# Verify CLI dispatcher
-docwright --version
+pip install --upgrade docwright-ai-toolkit
+```
 
-# List all 51 available tools
+Verify the CLI entrypoints after installation:
+
+```bash
 docwright list
-
-# Test MCP STDIO server initialization
 docwright-mcp --help
 ```
 
 ---
 
-## 2. Standalone Binary Executable
+## 2. Optional: LibreOffice for Formula Recalculation (`xlsx.recalc`)
 
-For environments without a local Python runtime (such as locked-down enterprise machines, CI/CD runners, or containerized agents), standalone binary executables are available on [GitHub Releases](https://github.com/YukiiMin/docwright-ai-toolkit/releases):
+When modifying Excel spreadsheets, `xlsx.mutate` and `xlsx.mutate_block` update formula strings automatically. If your workflow requires refreshing cached formula evaluation results (`<v>` tags) without opening Microsoft Excel, install **LibreOffice** so `xlsx.recalc` can run headless evaluation:
 
-| OS / Architecture | Binary Package | Size |
-|---|---|---|
-| **Windows x64** | `docwright-windows-amd64.exe` | ~25 MB |
-| **Linux x64** | `docwright-linux-amd64` | ~24 MB |
-| **macOS Apple Silicon** | `docwright-darwin-arm64` | ~23 MB |
-
-Configure your MCP client to launch the executable directly:
-
-```json
-{
-  "mcpServers": {
-    "docwright": {
-      "command": "C:\\Tools\\docwright.exe",
-      "args": ["mcp"]
-    }
-  }
-}
-```
-
----
-
-## Next Steps
-
-Connect Docwright to your favorite AI IDE:
-- [1-Click AI IDE Setup (Cursor, Claude, Antigravity)](/getting-started/ai-ide-setup/)
+- **Windows**: `winget install TheDocumentFoundation.LibreOffice`
+- **macOS**: `brew install --cask libreoffice`
+- **Ubuntu / Debian**: `sudo apt-get install -y libreoffice-calc`

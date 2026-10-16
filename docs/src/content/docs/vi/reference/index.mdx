@@ -1,0 +1,66 @@
+---
+title: Tổng Quan Danh Mục 51 Công Cụ
+description: Bảng tra cứu toàn bộ 51 công cụ đã đăng ký gồm Word (19), Excel (31) và Tiện ích chung (1).
+---
+
+Docwright AI Toolkits cung cấp **51 công cụ chuyên biệt** thuộc **2 mô-đun tài liệu cốt lõi** (`docx.*`, `xlsx.*`) và **1 mô-đun tiện ích** (`common.*`).
+
+- **[Công Cụ Word (`docx.*` — 19 Tools)](/vi/reference/docx-tools/)**: Khởi tạo tài liệu từ DocSpec, điền biểu mẫu Jinja, vá văn bản bảo toàn định dạng, trích xuất cấu trúc và tái tạo biểu mẫu từ PDF scan.
+- **[Công Cụ Excel (`xlsx.*` — 31 Tools)](/vi/reference/xlsx-tools/)**: Trích xuất dữ liệu 3 tầng, nhận diện đảo bảng 2D, chèn khối tự động dịch chuyển vùng công thức, tính toán lại qua LibreOffice và kiểm định chất lượng.
+- **[Tiện Ích Chung, CLI & Python SDK (`common.*` — 1 Tool)](/vi/reference/common-and-sdk/)**: Nén JSON tiết kiệm token, các lệnh CLI và thư viện `doctools.api`.
+
+## Bảng Danh Mục Toàn Bộ 51 Công Cụ
+
+| # | Tên Công Cụ (CLI / MCP) | Bí Danh MCP | Mô-đun | Chức năng chính |
+| :--- | :--- | :--- | :--- | :--- |
+| 1 | `xlsx.preflight` | `xlsx_preflight` | **XLSX** | Comprehensive Excel package inspection, structural inventory, and Fidelity Tier (T1..T4) determination. |
+| 2 | `xlsx.inspect` | `xlsx_inspect` | **XLSX** | Detailed 4-level workbook inspection (summary, structure, objects, cells). |
+| 3 | `xlsx.coverage_report` | `xlsx_coverage_report` | **XLSX** | Report workbook feature coverage and capabilities matrix. |
+| 4 | `xlsx.analyze_formulas` | `xlsx_analyze_formulas` | **XLSX** | Analyze R1C1 formulas, dependencies, and formula risks. |
+| 5 | `xlsx.describe_formats` | `xlsx_describe_formats` | **XLSX** | Describe cell formatting layers: number formats, fonts, borders, and fills. |
+| 6 | `xlsx.function_catalog` | `xlsx_function_catalog` | **XLSX** | Query Function Registry and formula compatibility matrix. |
+| 7 | `xlsx.mutate` | `xlsx_mutate` | **XLSX** | Mutate Excel workbook: clone prototype rows, update cells, and adjust formula ranges. |
+| 8 | `xlsx.recalc` | `xlsx_recalc` | **XLSX** | Recalculate Excel formulas via Excel COM, LibreOffice, or XML value cache injection. |
+| 9 | `xlsx.validate` | `xlsx_validate` | **XLSX** | Validate Excel workbook quality against Universal Gates (UG-01..16). |
+| 10 | `xlsx.diff` | `xlsx_diff` | **XLSX** | Compare structural differences and regression issues between two Excel workbooks. |
+| 11 | `xlsx.export_legacy_xls` | `xlsx_export_legacy_xls` | **XLSX** | Export modern Excel file (.xlsx) to legacy .xls (Excel 97-2003) format via Excel COM or LibreOffice. |
+| 12 | `xlsx.build` | `xlsx_build` | **XLSX** | Build a new Excel workbook from JSON XlsxSpec with design tokens and native DrawingML charts. |
+| 13 | `xlsx.repair` | `xlsx_repair` | **XLSX** | Repair OpenXML package structural issues, restore calcPr tags, and sanitize invalid XML characters. |
+| 14 | `xlsx.register_template` | `xlsx_register_template` | **XLSX** | Register an Excel template (.xlsx) with manifest into the versioned repository. |
+| 15 | `xlsx.lint_template` | `xlsx_lint_template` | **XLSX** | Lint an Excel template for static quality issues and manifest consistency. |
+| 16 | `xlsx.list_templates` | `xlsx_list_templates` | **XLSX** | List all registered Excel templates and their versions. |
+| 17 | `xlsx.set_format` | `xlsx_set_format` | **XLSX** | Apply cell formatting (number formats, fonts, borders, fills). |
+| 18 | `xlsx.set_validation` | `xlsx_set_validation` | **XLSX** | Apply data validation to a specified cell range. |
+| 19 | `xlsx.set_conditional_format` | `xlsx_set_conditional_format` | **XLSX** | Apply conditional formatting rules to a cell range. |
+| 20 | `xlsx.copy_sheet` | `xlsx_copy_sheet` | **XLSX** | Clone worksheet preserving 100% drawings, shapes, and data validation rules. |
+| 21 | `xlsx.extract` | `xlsx_extract` | **XLSX** | Extract full WorkbookModel JSON or JSONL lines into FileStore, returning a lightweight summary. |
+| 22 | `xlsx.query` | `xlsx_query` | **XLSX** | Query targeted data slices (sheet, bounding range, header row, labels) with offset and limit pagination. |
+| 23 | `xlsx.verify_extract` | `xlsx_verify_extract` | **XLSX** | Verify 4-layer parity or O(N) column hash fidelity between Excel workbook and extracted JSON/JSONL data. |
+| 24 | `xlsx.classify_layout` | `xlsx_classify_layout` | **XLSX** | Inspect workbook layout topology and recommend extraction archetype with evidence. |
+| 25 | `xlsx.profile_scaffold` | `xlsx_profile_scaffold` | **XLSX** | Scaffold declarative YAML or JSON profile specification for an Excel spreadsheet. |
+| 26 | `xlsx.semantic_extract` | `xlsx_semantic_extract` | **XLSX** | Enterprise semantic extraction, DrawingML image extraction, and cross-sheet topology mapping. |
+| 27 | `xlsx.detect_tables` | `xlsx_detect_tables` | **XLSX** | Tự động nhận diện các đảo bảng độc lập (Table Islands) và Bounding Boxes trên worksheet. |
+| 28 | `xlsx.mutate_block` | `xlsx_mutate_block` | **XLSX** | Dời khối ô 2D cục bộ trong Bounding Box, bảo vệ 100% các bảng song song bên cạnh. |
+| 29 | `xlsx.shift_block` | `xlsx_shift_block` | **XLSX** | Alias của xlsx.mutate_block: dời khối ô 2D cục bộ bảo vệ các bảng song song. |
+| 30 | `xlsx.batch_interact` | `xlsx_batch_interact` | **XLSX** | Cập nhật hàng loạt Data Validation, Conditional Formatting, Sheet Protection theo giao dịch nguyên tử All-or-Nothing. |
+| 31 | `xlsx.bulk_ingest` | `xlsx_bulk_ingest` | **XLSX** | Nạp dữ liệu lớn từ file CSV/JSONL vào bảng tính Excel theo Size Policy và bảo vệ RAM. |
+| 32 | `docx.inspect_structure` | `docx_inspect_structure` | **DOCX** | Inspect Word document structure tree with stable anchor coordinates for AI analysis and editing. |
+| 33 | `docx.validate` | `docx_validate` | **DOCX** | Validate OpenXML package and document quality against gates DG-01 through DG-08. |
+| 34 | `docx.extract_media` | `docx_extract_media` | **DOCX** | Extract embedded images/media from Word package into FileStore with dynamic geometry resolution. |
+| 35 | `docx.to_markdown` | `docx_to_markdown` | **DOCX** | Convert Word document to clean CommonMark Markdown for AI summarization and analysis (Read-Only). |
+| 36 | `docx.render_template` | `docx_render_template` | **DOCX** | Render Word document from Jinja2 template via SandboxedEnvironment with OpenXML guardrails. |
+| 37 | `docx.build_document` | `docx_build_document` | **DOCX** | Unified Word document builder: Path A (Jinja Template) and Path B (DocSpec JSON). |
+| 38 | `docx.patch` | `docx_patch` | **DOCX** | In-place patch of Word documents via declarative operations, preserving run formatting and OpenXML guardrails. |
+| 39 | `docx.merge` | `docx_merge` | **DOCX** | Merge sub-documents and appendices into a primary Word document, resolving style conflicts. |
+| 40 | `docx.lint_template` | `docx_lint_template` | **DOCX** | Read-only lint of DOCX templates: detect Jinja2 syntax, split tags, dynamic fields, SSTI risks. |
+| 41 | `docx.normalize_template` | `docx_normalize_template` | **DOCX** | Consolidate split Jinja runs, clean up w:proofErr tags, and produce normalized template DOCX. |
+| 42 | `docx.register_template` | `docx_register_template` | **DOCX** | Register template with manifest YAML/JSON: schema validation and sha256 checksum verification. |
+| 43 | `docx.list_templates` | `docx_list_templates` | **DOCX** | List all registered templates in the template repository. |
+| 44 | `docx.get_template_manifest` | `docx_get_template_manifest` | **DOCX** | Get manifest details, variables, and layout constraints of a registered template. |
+| 45 | `docx.update_fields` | `docx_update_fields` | **DOCX** | Detect dynamic fields (TOC, PAGEREF) and manage w:updateFields flag for auto-refresh on Word open. |
+| 46 | `docx.extract` | `docx_extract` | **DOCX** | 2-Tier Faithful IR: Dump full L1/L2 DocumentModel JSON into FileStore, returning a lightweight summary (< 25 KB). |
+| 47 | `docx.query` | `docx_query` | **DOCX** | Targeted slice query on extracted DOCX model (heading, table, search, section geometry). |
+| 48 | `docx.measure_pdf_layout` | `docx_measure_pdf_layout` | **DOCX** | Document Vision engine: measures page skew, table bounds, and column ratios from scanned PDF. |
+| 49 | `docx.populate_layout_text` | `docx_populate_layout_text` | **DOCX** | Populates transcribed text into measured LayoutSpec cells by cell ID or table row matrix. |
+| 50 | `docx.compile_layout_spec` | `docx_compile_layout_spec` | **DOCX** | Deterministic LayoutSpec compiler: transforms measured LayoutSpec into DocSpec v1.1. |
+| 51 | `common.compact_json` | `common_compact_json` | **COMMON** | Minify and compact JSON file or text for maximum AI token efficiency, with optional path querying and depth limiting. |
